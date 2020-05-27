@@ -30,6 +30,7 @@ public class PBTeamPlayer
         this.player.setGameMode(GameMode.SURVIVAL);
         this.player.teleport(Arena.spawn);
         this.inGame = false;
+        Arena.playersPlaying.remove(player);
     }
     
     public Player getPlayer() {

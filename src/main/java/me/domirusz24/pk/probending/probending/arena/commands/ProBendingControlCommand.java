@@ -134,6 +134,10 @@ public class ProBendingControlCommand implements CommandExecutor
                             if (arena.isInGame()) {
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
                                 return false;
+                            } else {
+                                arena.getTempTeamByTag(TeamTag.BLUE).removeAllPlayers();
+                                arena.getTempTeamByTag(TeamTag.RED).removeAllPlayers();
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto wszystkich playerow z oczekujacych druzyn!");
                             }
                         }
                         case "add": {

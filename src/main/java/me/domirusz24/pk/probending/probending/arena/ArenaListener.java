@@ -1,5 +1,6 @@
 package me.domirusz24.pk.probending.probending.arena;
 
+import me.domirusz24.pk.probending.probending.arena.temp.TempTeam;
 import org.bukkit.event.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.*;
@@ -20,12 +21,12 @@ public class ArenaListener implements Listener
             for (final Arena arena : Arena.Arenas) {
                 if (arena.isInGame() && arena.getAllPlayers().contains(event.getPlayer())) {
                     arena.killPlayer(arena.getPBPlayer(event.getPlayer()));
+                    arena.removePlayer(arena.getPBPlayer(event.getPlayer()));
                 }
             }
         }
-    }
-    
-    static {
-        ArenaListener.freezePlayers = new ArrayList<Player>();
+        if (TempTeam.playersWaiting.containsKey(event.getPlayer())) {
+            TempTeam.playersWaiting.get(event.getPlayer()).removePlayer(event.getPlayer());
+        }
     }
 }

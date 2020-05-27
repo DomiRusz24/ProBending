@@ -47,8 +47,8 @@ public class Arena
     }
     
     public void startGameWithFeedBack(final Player player) {
-        if (this.blueTempTeam.readyToPlay() && this.redTempTeam.readyToPlay()) {
-            this.startGame(new Team(this.blueTempTeam.getPlayer1(), this.blueTempTeam.getPlayer2(), this.blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(this.redTempTeam.getPlayer1(), this.redTempTeam.getPlayer2(), this.redTempTeam.getPlayer3(), TeamTag.RED));
+        if (blueTempTeam.readyToPlay() && this.redTempTeam.readyToPlay()) {
+            startGame(new Team(blueTempTeam.getPlayer1(), blueTempTeam.getPlayer2(), blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(redTempTeam.getPlayer1(), redTempTeam.getPlayer2(), redTempTeam.getPlayer3(), TeamTag.RED));
             player.sendMessage(ChatColor.BOLD + "Rozpoczela sie gra! (Arena " + this.ID + ")");
             System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
             return;
@@ -58,8 +58,8 @@ public class Arena
     }
     
     public void startGame() {
-        if (this.blueTempTeam.readyToPlay() && this.redTempTeam.readyToPlay()) {
-            this.startGame(new Team(this.blueTempTeam.getPlayer1(), this.blueTempTeam.getPlayer2(), this.blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(this.redTempTeam.getPlayer1(), this.redTempTeam.getPlayer2(), this.redTempTeam.getPlayer3(), TeamTag.RED));
+        if (blueTempTeam.readyToPlay() && redTempTeam.readyToPlay()) {
+            startGame(new Team(blueTempTeam.getPlayer1(), blueTempTeam.getPlayer2(), blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(redTempTeam.getPlayer1(), redTempTeam.getPlayer2(), redTempTeam.getPlayer3(), TeamTag.RED));
             System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
             return;
         }
@@ -74,7 +74,7 @@ public class Arena
         return (teamTag == TeamTag.BLUE) ? this.blueTempTeam : this.redTempTeam;
     }
     
-    public void startGame(final TempTeam blueTempTeam, final TempTeam redTempTeam) {
+    public void startGame(TempTeam blueTempTeam, TempTeam redTempTeam) {
         if (blueTempTeam.readyToPlay() && redTempTeam.readyToPlay()) {
             this.startGame(new Team(blueTempTeam.getPlayer1(), blueTempTeam.getPlayer2(), blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(redTempTeam.getPlayer1(), redTempTeam.getPlayer2(), redTempTeam.getPlayer3(), TeamTag.RED));
             System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
@@ -92,7 +92,7 @@ public class Arena
     }
     
     public void stopGame() {
-        if (!this.inGame) {
+        if (this.inGame) {
             this.inGame = false;
             for (final Player player : this.getAllPlayers()) {
                 Arena.playersPlaying.remove(player);
@@ -105,7 +105,7 @@ public class Arena
     }
     
     private void nextRound() {
-        ++this.roundNumber;
+        roundNumber++;
         for (final PBTeamPlayer player : this.getAllPBPlayers()) {
             if (!player.isKilled()) {
                 final int stage = (player.getTeam().getTeamTag() == TeamTag.BLUE) ? 5 : 4;
@@ -152,6 +152,13 @@ public class Arena
         player.setStage(11);
         player.getPlayer().setGameMode(GameMode.SPECTATOR);
     }
+
+    public void removePlayer(final PBTeamPlayer player) {
+        if (!player.isInGame()) {
+            return;
+        }
+        player.removePlayer();
+    }
     
     public PBTeamPlayer getPBPlayer(final Player player) {
         for (final PBTeamPlayer i : this.getAllPBPlayers()) {
@@ -193,14 +200,15 @@ public class Arena
                 }
                 Arena.this.TeamRed.claimingStage = false;
             }
-        }.runTaskLater((Plugin)ProBending.plugin, 60L);
+        }.runTaskLater(ProBending.plugin, 60L);
     }
     
     public void runChecker() {
-        final ArrayList<PBTeamPlayer> teamPlayers = new ArrayList<PBTeamPlayer>(this.getAllPBPlayers());
+        final ArrayList<PBTeamPlayer> teamPlayers = new ArrayList<>(this.getAllPBPlayers());
         new BukkitRunnable() {
+            int round = roundNumber;
             public void run() {
-                if (!Arena.this.instance.inGame) {
+                if (!Arena.this.instance.inGame || round != roundNumber) {
                     this.cancel();
                 }
                 for (final PBTeamPlayer player : teamPlayers) {
@@ -209,22 +217,31 @@ public class Arena
                             continue;
                         }
                         StageEnum stage = player.getCurrentStage();
+
+
                         if (!player.isInTieBreaker() && (stage.getID() == 12 || stage.getID() == 13)) {
                             stage = StageEnum.getFromID((stage.getID() == 12) ? 4 : 5);
                         }
+
+
                         final StageEnum currentStage = StageEnum.getFromID(player.getStage());
                         final TeamTag playerTag = player.getTeam().getTeamTag();
                         final Team team = Arena.this.instance.getTeamByTag(playerTag);
                         final ChatColor teamColor = (playerTag == TeamTag.BLUE) ? ChatColor.BLUE : ChatColor.RED;
+
+                        if (stage.equals(StageEnum.Line)) {
+                            stage = currentStage;
+                        }
+
                         if (stage == StageEnum.WholeArena) {
+                            // TODO: SYSTEM KARANIA
                             player.getPlayer().teleport(Arena.this.instance.stages.get(currentStage.getID()).getTeleportByNumber(team.getPBPlayerNumber(player)));
                         }
                         else if (stage.getID() < currentStage.getID()) {
                             player.lowerStage();
                             if (team.getPlayer1().getStage() <= player.getStage() && team.getPlayer2().getStage() <= player.getStage() && team.getPlayer3().getStage() <= player.getStage()) {
                                 Arena.this.instance.claimStage((team.getTeamTag() == TeamTag.BLUE) ? TeamTag.RED : TeamTag.BLUE);
-                            }
-                            else {
+                            } else {
                                 if (player.isInGame()) {
                                     continue;
                                 }
@@ -233,8 +250,7 @@ public class Arena
                                     p.sendMessage(ChatColor.BOLD + "" + teamColor + "Player " + player.getPlayer().getDisplayName() + " dostal K-O!");
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             if (stage.getID() <= currentStage.getID()) {
                                 continue;
                             }
@@ -244,7 +260,7 @@ public class Arena
                     }
                 }
             }
-        }.runTaskTimer((Plugin)ProBending.plugin, 0L, 5L);
+        }.runTaskTimer(ProBending.plugin, 0L, 5L);
     }
     
     public Location getCenter() {
@@ -260,7 +276,7 @@ public class Arena
     }
     
     public ArrayList<Player> getAllPlayers() {
-        final ArrayList<Player> i = new ArrayList<Player>();
+        final ArrayList<Player> i = new ArrayList<>();
         i.addAll(this.TeamRed.getPlayers());
         i.addAll(this.TeamBlue.getPlayers());
         i.removeIf(Objects::isNull);
@@ -272,7 +288,7 @@ public class Arena
     }
     
     public ArrayList<PBTeamPlayer> getAllPBPlayers() {
-        final ArrayList<PBTeamPlayer> i = new ArrayList<PBTeamPlayer>();
+        final ArrayList<PBTeamPlayer> i = new ArrayList<>();
         i.addAll(this.TeamBlue.getPBPlayers());
         i.addAll(this.TeamRed.getPBPlayers());
         i.removeIf(Objects::isNull);
@@ -293,10 +309,5 @@ public class Arena
     
     public boolean isInGame() {
         return this.inGame;
-    }
-    
-    static {
-        Arena.Arenas = new ArrayList<Arena>();
-        Arena.playersPlaying = new ArrayList<Player>();
     }
 }

@@ -60,7 +60,7 @@ public enum StageEnum
     }
     
     public static ArrayList<StageEnum> getTeam(final TeamTag tag) {
-        final ArrayList<StageEnum> enums = new ArrayList<StageEnum>();
+        final ArrayList<StageEnum> enums = new ArrayList<>();
         for (final StageEnum e : values()) {
             if (e.teamTag == tag) {
                 enums.add(e);
