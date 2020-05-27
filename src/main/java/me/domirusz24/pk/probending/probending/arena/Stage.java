@@ -7,10 +7,6 @@ import java.io.IOException;
 
 public class Stage
 {
-    private Location center;
-    private Location player1Teleport;
-    private Location player2Teleport;
-    private Location player3Teleport;
     private final StageEnum stage;
     private final String configEntry;
     

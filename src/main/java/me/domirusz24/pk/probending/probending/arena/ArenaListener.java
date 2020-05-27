@@ -25,8 +25,8 @@ public class ArenaListener implements Listener
                 }
             }
         }
-        if (TempTeam.playersWaiting.containsKey(event.getPlayer())) {
-            TempTeam.playersWaiting.get(event.getPlayer()).removePlayer(event.getPlayer());
+        if (TempTeam.playersWaiting.containsKey(event.getPlayer().getName())) {
+            TempTeam.playersWaiting.get(event.getPlayer().getName()).removePlayer(event.getPlayer().getName());
         }
     }
 }

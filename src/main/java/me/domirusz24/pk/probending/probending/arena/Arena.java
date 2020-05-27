@@ -52,7 +52,6 @@ public class Arena
         this.roundNumber = 0;
         Arena.Arenas.add(this);
         this.ID = ID;
-        System.out.println(ID);
         setCenter(location);
         this.blueTempTeam = new TempTeam();
         this.redTempTeam = new TempTeam();
@@ -281,7 +280,6 @@ public class Arena
     }
 
     public void setCenter(Location location) throws IOException {
-        System.out.println(ID);
         ConfigMethods.saveLocation("Arena.nr" + this.ID + ".center", location);
     }
     

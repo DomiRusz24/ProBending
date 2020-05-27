@@ -3,11 +3,10 @@ package me.domirusz24.pk.probending.probending.arena.temp;
 import me.domirusz24.pk.probending.probending.ProBending;
 import org.bukkit.entity.*;
 import java.util.*;
-import java.util.function.*;
 
 public class TempTeam
 {
-    public static HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
+    public static HashMap<String, TempTeam> playersWaiting = new HashMap<>();
     private String player1;
     private String player2;
     private String player3;
@@ -46,22 +45,22 @@ public class TempTeam
         if (this.getAllPlayers().contains(player)) {
             return;
         }
-        if (TempTeam.playersWaiting.containsKey(player)) {
-            TempTeam.playersWaiting.get(player).removePlayer(player);
+        if (TempTeam.playersWaiting.containsKey(player.getName())) {
+            TempTeam.playersWaiting.get(player.getName()).removePlayer(player);
         }
         if (this.player1 == null) {
             this.player1 = player.getName();
-            TempTeam.playersWaiting.put(player, this);
+            TempTeam.playersWaiting.put(player.getName(), this);
             return;
         }
         if (this.player2 == null) {
             this.player2 = player.getName();
-            TempTeam.playersWaiting.put(player, this);
+            TempTeam.playersWaiting.put(player.getName(), this);
             return;
         }
         if (this.player3 == null) {
             this.player3 = player.getName();
-            TempTeam.playersWaiting.put(player, this);
+            TempTeam.playersWaiting.put(player.getName(), this);
         }
     }
     
@@ -71,34 +70,34 @@ public class TempTeam
         }
         if (this.player1.equals(player.getName())) {
             this.player1 = null;
-            TempTeam.playersWaiting.remove(player);
+            TempTeam.playersWaiting.remove(player.getName());
             return;
         }
         if (this.player2.equals(player.getName())) {
             this.player2 = null;
-            TempTeam.playersWaiting.remove(player);
+            TempTeam.playersWaiting.remove(player.getName());
             return;
         }
         if (this.player3.equals(player.getName())) {
             this.player3 = null;
-            TempTeam.playersWaiting.remove(player);
+            TempTeam.playersWaiting.remove(player.getName());
         }
     }
 
     public void removePlayer(final String name) {
         if (this.player1.equals(name)) {
             this.player1 = null;
-            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
+            TempTeam.playersWaiting.remove(name);
             return;
         }
         if (this.player2.equals(name)) {
             this.player2 = null;
-            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
+            TempTeam.playersWaiting.remove(name);
             return;
         }
         if (this.player3.equals(name)) {
             this.player3 = null;
-            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
+            TempTeam.playersWaiting.remove(name);
         }
     }
     
@@ -117,9 +116,9 @@ public class TempTeam
     
     public List<Player> getAllPlayers(final boolean nullValues) {
         final List<Player> list = new ArrayList<>();
-        list.add(getPlayer3());
-        list.add(getPlayer2());
         list.add(getPlayer1());
+        list.add(getPlayer2());
+        list.add(getPlayer3());
         if (!nullValues) {
             list.removeIf(Objects::isNull);
         }

@@ -69,8 +69,9 @@ public class AreanaCreateCommand implements CommandExecutor
                         return true;
                     }
                     final StageEnum stageEnum = StageEnum.valueOf(args[1]);
+                    System.out.println(stageEnum.name());
                     final Stage stage = arena.getStage(stageEnum.getID());
-                    if (arena == null) {
+                    if (stage == null) {
                         player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Taka nazwa strefy nie istnieje!");
                         return true;
                     }
@@ -82,7 +83,7 @@ public class AreanaCreateCommand implements CommandExecutor
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 1 w " + stage.toString() + "!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 1 w " + stage.getStage().toString() + "!");
                             return true;
                         }
                         case "player2": {
@@ -91,7 +92,7 @@ public class AreanaCreateCommand implements CommandExecutor
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 2 w " + stage.toString() + "!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 2 w " + stage.getStage().toString() + "!");
                             return true;
                         }
                         case "player3": {
@@ -100,7 +101,7 @@ public class AreanaCreateCommand implements CommandExecutor
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 3 w " + stage.toString() + "!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 3 w " + stage.getStage().toString() + "!");
                             return true;
                         }
                         case "center": {
@@ -109,7 +110,7 @@ public class AreanaCreateCommand implements CommandExecutor
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Srodka w " + stage.toString() + "!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Srodka w " + stage.getStage().toString() + "!");
                             return true;
                         }
                         default: {

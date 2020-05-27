@@ -6,7 +6,7 @@ public enum StageEnum
 {
     Line(14, (TeamTag)null, "SWAMPLAND"), 
     TieBreakerBLUE(13, TeamTag.BLUE, "RIVER"), 
-    TieBreakerRED(12, TeamTag.RED, "TAIGA"), 
+    TieBreakerRED(12, TeamTag.RED, "STONE_BEACH"),
     WholeArena(11, (TeamTag)null, "PLAINS"), 
     BackBLUE(8, TeamTag.BLUE, "OCEAN"), 
     ThirdBLUE(7, TeamTag.BLUE, "JUNGLE"), 

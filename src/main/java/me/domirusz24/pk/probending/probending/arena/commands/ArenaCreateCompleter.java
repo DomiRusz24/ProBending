@@ -19,7 +19,7 @@ public class ArenaCreateCompleter implements TabCompleter
             }
             if (args.length == 2) {
                 for (final StageEnum e : StageEnum.values()) {
-                    complete.add(e.name());
+                    complete.add(e.toString());
                 }
             }
             if (args.length == 3) {
