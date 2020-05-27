@@ -1,22 +1,27 @@
 package me.domirusz24.pk.probending.probending;
 
-import me.domirusz24.pk.probending.probending.arena.commands.AreanaCreateCommand;
-import me.domirusz24.pk.probending.probending.arena.commands.ArenaCreateCompleter;
-import me.domirusz24.pk.probending.probending.arena.ArenaListener;
-import me.domirusz24.pk.probending.probending.arena.commands.ProBendingControlCommand;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.*;
+import me.domirusz24.pk.probending.probending.arena.*;
+import org.bukkit.event.*;
+import org.bukkit.plugin.*;
+import org.bukkit.command.*;
+import me.domirusz24.pk.probending.probending.arena.commands.*;
 
-public final class ProBending extends JavaPlugin {
-
+public final class ProBending extends JavaPlugin
+{
     public static JavaPlugin plugin;
-
-    @Override
+    
     public void onEnable() {
         System.out.println("ProBending zostal wlaczony!");
-        plugin = this;
-        plugin.getServer().getPluginManager().registerEvents(new ArenaListener(), this);
-        this.getCommand("arena").setExecutor(new AreanaCreateCommand());
-        this.getCommand("pbc").setExecutor(new ProBendingControlCommand());
-        this.getCommand("arena").setTabCompleter(new ArenaCreateCompleter());
+        ProBending.plugin = this;
+        ProBending.plugin.getServer().getPluginManager().registerEvents((Listener)new ArenaListener(), (Plugin)this);
+        this.getCommand("arena").setExecutor((CommandExecutor)new AreanaCreateCommand());
+        this.getCommand("pbc").setExecutor((CommandExecutor)new ProBendingControlCommand());
+        this.getCommand("arena").setTabCompleter((TabCompleter)new ArenaCreateCompleter());
+        this.getCommand("pbc").setTabCompleter((TabCompleter)new PBCCompleter());
+    }
+    
+    public void onDisable() {
+        System.out.println("Zapisano areny do configu!");
     }
 }

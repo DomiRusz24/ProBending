@@ -1,46 +1,46 @@
 package me.domirusz24.pk.probending.probending.arena;
 
-import org.bukkit.block.Biome;
+import java.util.*;
 
-import java.util.ArrayList;
-
-public enum StageEnum {
-    TieBreakerBLUE(13, TeamTag.BLUE, "river" ),
-    TieBreakerRED(12, TeamTag.RED, "taiga"),
-    WholeArena(11, null, "plains"), // Cala arena (NAJPIERW TO)
-    BackBLUE(8, TeamTag.BLUE, "ocean"),
-    ThirdBLUE(7, TeamTag.BLUE, "jungle"),
-    SecondBLUE(6, TeamTag.BLUE, "forest" ),
-    FirstBLUE(5, TeamTag.BLUE, "beach" ),
-    FirstRED(4, TeamTag.RED, "swamp"),
-    SecondRED(3, TeamTag.RED, "savanna"),
-    ThirdRED(2, TeamTag.RED, "plains"),
-    BackRED(1, TeamTag.RED, "mountains");
-
+public enum StageEnum
+{
+    Line(14, (TeamTag)null, "SWAMPLAND"), 
+    TieBreakerBLUE(13, TeamTag.BLUE, "RIVER"), 
+    TieBreakerRED(12, TeamTag.RED, "TAIGA"), 
+    WholeArena(11, (TeamTag)null, "PLAINS"), 
+    BackBLUE(8, TeamTag.BLUE, "OCEAN"), 
+    ThirdBLUE(7, TeamTag.BLUE, "JUNGLE"), 
+    SecondBLUE(6, TeamTag.BLUE, "FOREST"), 
+    FirstBLUE(5, TeamTag.BLUE, "MESA_ROCK"), 
+    FirstRED(4, TeamTag.RED, "JUNGLE_HILLS"), 
+    SecondRED(3, TeamTag.RED, "SAVANNA"), 
+    ThirdRED(2, TeamTag.RED, "MESA"), 
+    BackRED(1, TeamTag.RED, "BEACHES");
+    
     private final int ID;
     private final String biome;
     private final TeamTag teamTag;
-
-    StageEnum(int ID, TeamTag teamTag, String biome) {
+    
+    private StageEnum(final int ID, final TeamTag teamTag, final String biome) {
         this.ID = ID;
         this.biome = biome;
         this.teamTag = teamTag;
     }
-
+    
     public int getID() {
-        return ID;
+        return this.ID;
     }
-
+    
     public String getBiome() {
-        return biome;
+        return this.biome;
     }
-
+    
     public TeamTag getTeamTag() {
-        return teamTag;
+        return this.teamTag;
     }
-
-    public static StageEnum getFromID(int ID) {
-        for (StageEnum e : StageEnum.values()) {
+    
+    public static StageEnum getFromID(final int ID) {
+        for (final StageEnum e : values()) {
             if (e.ID == ID) {
                 return e;
             }
@@ -48,9 +48,9 @@ public enum StageEnum {
         System.out.println("Niepoprawne ID (" + ID + ")");
         throw new IllegalArgumentException();
     }
-
-    public static StageEnum getFromBiome(String biome) {
-        for (StageEnum e : StageEnum.values()) {
+    
+    public static StageEnum getFromBiome(final String biome) {
+        for (final StageEnum e : values()) {
             if (e.biome.equalsIgnoreCase(biome)) {
                 return e;
             }
@@ -58,10 +58,10 @@ public enum StageEnum {
         System.out.println("Niepoprawny biome (" + biome + ")");
         throw new IllegalArgumentException();
     }
-
-    public static ArrayList<StageEnum> getTeam(TeamTag tag) {
-        ArrayList<StageEnum> enums = new ArrayList<>();
-        for (StageEnum e : StageEnum.values()) {
+    
+    public static ArrayList<StageEnum> getTeam(final TeamTag tag) {
+        final ArrayList<StageEnum> enums = new ArrayList<StageEnum>();
+        for (final StageEnum e : values()) {
             if (e.teamTag == tag) {
                 enums.add(e);
             }

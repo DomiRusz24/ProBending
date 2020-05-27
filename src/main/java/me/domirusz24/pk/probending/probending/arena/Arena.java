@@ -1,303 +1,302 @@
 package me.domirusz24.pk.probending.probending.arena;
 
-import me.domirusz24.pk.probending.probending.ProBending;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.*;
+import me.domirusz24.pk.probending.probending.arena.temp.*;
+import org.bukkit.*;
+import org.bukkit.scheduler.*;
+import me.domirusz24.pk.probending.probending.*;
+import org.bukkit.plugin.*;
+import java.util.*;
+import java.util.function.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class Arena {
-    public static ArrayList<Arena> Arenas = new ArrayList<>();
-    public static ArrayList<Player> playersPlaying = new ArrayList<>();
+public class Arena
+{
+    public static ArrayList<Arena> Arenas;
+    public static ArrayList<Player> playersPlaying;
     public static Location spawn;
-
-    private boolean inGame = false;
-    public boolean inProgressOfCreating = false;
+    public TempTeam blueTempTeam;
+    public TempTeam redTempTeam;
+    private boolean inGame;
     private Arena instance;
-    private HashMap<Integer, Stage> stages = new HashMap<>();
+    private HashMap<Integer, Stage> stages;
     private Location center;
     private Team TeamBlue;
     private Team TeamRed;
-    private int ID;
-
-    public Arena(Location location) {
-        center = location;
-        Arena.Arenas.add(this);
-        ID = Arena.Arenas.size();
-        setUpArena();
+    private String ID;
+    private int roundNumber;
+    
+    public static Arena getArenaFromID(final String id) {
+        for (final Arena arena : Arena.Arenas) {
+            if (arena.getID().equalsIgnoreCase(id)) {
+                return arena;
+            }
+        }
+        return null;
     }
-
-    public void startGame(Team team1, Team team2) {
+    
+    public Arena(final Location location) {
+        this.inGame = false;
+        this.stages = new HashMap<>();
+        this.roundNumber = 0;
+        this.center = location;
+        Arena.Arenas.add(this);
+        this.ID = String.valueOf(Arena.Arenas.size());
+        this.blueTempTeam = new TempTeam();
+        this.redTempTeam = new TempTeam();
+        this.setUpArena();
+    }
+    
+    public void startGameWithFeedBack(final Player player) {
+        if (this.blueTempTeam.readyToPlay() && this.redTempTeam.readyToPlay()) {
+            this.startGame(new Team(this.blueTempTeam.getPlayer1(), this.blueTempTeam.getPlayer2(), this.blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(this.redTempTeam.getPlayer1(), this.redTempTeam.getPlayer2(), this.redTempTeam.getPlayer3(), TeamTag.RED));
+            player.sendMessage(ChatColor.BOLD + "Rozpoczela sie gra! (Arena " + this.ID + ")");
+            System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
+            return;
+        }
+        player.sendMessage(ChatColor.BOLD + "Arena " + this.ID + " nie moze sie zaczac z powodu braku graczy!");
+        System.out.println("Arena " + this.ID + " nie moze sie zaczac z powodu braku graczy!");
+    }
+    
+    public void startGame() {
+        if (this.blueTempTeam.readyToPlay() && this.redTempTeam.readyToPlay()) {
+            this.startGame(new Team(this.blueTempTeam.getPlayer1(), this.blueTempTeam.getPlayer2(), this.blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(this.redTempTeam.getPlayer1(), this.redTempTeam.getPlayer2(), this.redTempTeam.getPlayer3(), TeamTag.RED));
+            System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
+            return;
+        }
+        System.out.println("Arena " + this.ID + " nie moze sie zaczac z powodu braku graczy!");
+    }
+    
+    public void startGame(final Team team1, final Team team2) {
+        this.setUpStart(team1, team2);
+    }
+    
+    public TempTeam getTempTeamByTag(final TeamTag teamTag) {
+        return (teamTag == TeamTag.BLUE) ? this.blueTempTeam : this.redTempTeam;
+    }
+    
+    public void startGame(final TempTeam blueTempTeam, final TempTeam redTempTeam) {
+        if (blueTempTeam.readyToPlay() && redTempTeam.readyToPlay()) {
+            this.startGame(new Team(blueTempTeam.getPlayer1(), blueTempTeam.getPlayer2(), blueTempTeam.getPlayer3(), TeamTag.BLUE), new Team(redTempTeam.getPlayer1(), redTempTeam.getPlayer2(), redTempTeam.getPlayer3(), TeamTag.RED));
+            System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
+            return;
+        }
+        System.out.println("Arena " + this.ID + " nie moze sie zaczac z powodu braku graczy!");
+    }
+    
+    private void setUpStart(final Team team1, final Team team2) {
         this.TeamBlue = team1;
         this.TeamRed = team2;
         this.inGame = true;
-
-        TeamRed.getPlayer1().getPlayer().teleport(stages.get(4).getPlayer1Teleport());
-        TeamRed.getPlayer2().getPlayer().teleport(stages.get(4).getPlayer2Teleport());
-        TeamRed.getPlayer3().getPlayer().teleport(stages.get(4).getPlayer3Teleport());
-
-        TeamBlue.getPlayer1().getPlayer().teleport(stages.get(5).getPlayer1Teleport());
-        TeamBlue.getPlayer2().getPlayer().teleport(stages.get(5).getPlayer2Teleport());
-        TeamBlue.getPlayer3().getPlayer().teleport(stages.get(5).getPlayer3Teleport());
-
-        for (Player player : getAllPlayers()) {
-            ArenaListener.freezePlayers.add(player);
-            Arena.playersPlaying.add(player);
-            player.sendTitle(ChatColor.BOLD + "Gra zaczyna sie za 10sekund!", "",5,100, 5);
+        System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
+        this.nextRound();
+    }
+    
+    public void stopGame() {
+        if (!this.inGame) {
+            this.inGame = false;
+            for (final Player player : this.getAllPlayers()) {
+                Arena.playersPlaying.remove(player);
+                this.getPBPlayer(player).removePlayer();
+                player.setGameMode(GameMode.SURVIVAL);
+                player.teleport(Arena.spawn);
+                player.sendTitle(ChatColor.DARK_RED + "Koniec gry!", "", 10, 20, 10);
+            }
         }
-        instance = this;
-        final int[] i = {5};
+    }
+    
+    private void nextRound() {
+        ++this.roundNumber;
+        for (final PBTeamPlayer player : this.getAllPBPlayers()) {
+            if (!player.isKilled()) {
+                final int stage = (player.getTeam().getTeamTag() == TeamTag.BLUE) ? 5 : 4;
+                player.setStage(stage);
+                player.getPlayer().teleport(this.stages.get(stage).getTeleportByNumber(player.getTeam().getPBPlayerNumber(player)));
+                ArenaListener.freezePlayers.add(player.getPlayer());
+                Arena.playersPlaying.add(player.getPlayer());
+                player.getPlayer().sendTitle(ChatColor.BOLD + "Gra zaczyna sie za 10sekund!", "", 5, 100, 5);
+            }
+        }
+        this.instance = this;
+        final int[] i = { 5 };
         new BukkitRunnable() {
-            @Override
             public void run() {
-                for (Player player : getAllPlayers()) {
-                    ArenaListener.freezePlayers.add(player);
+                for (PBTeamPlayer pbTeamPlayer : Arena.this.instance.getAllPBPlayers()) {
+                    Player player = pbTeamPlayer.getPlayer();
+                    if (!pbTeamPlayer.isInGame()) {
+                        break;
+                    }
                     if (i[0] != 0) {
                         player.sendTitle(ChatColor.BOLD + Integer.toString(i[0]), "", 0, 20, 0);
-                    } else {
+                    }
+                    else {
                         player.sendTitle(ChatColor.BOLD + "START!", "", 0, 15, 5);
-                        instance.runChecker();
+                        ArenaListener.freezePlayers.remove(player);
+                        Arena.this.instance.runChecker();
                         this.cancel();
                     }
                 }
                 i[0]--;
             }
-        }.runTaskTimer(ProBending.plugin, 100, 20);
+        }.runTaskTimer(ProBending.plugin, 100L, 20L);
     }
-
-    public void stopGame() {
-        if(!inGame) {
-            inGame = false;
-            for (Player player : getAllPlayers()) {
-                Arena.playersPlaying.remove(player);
-                this.getPBPlayer(player).removePlayer();
-                player.setGameMode(GameMode.SURVIVAL);
-                player.sendTitle(ChatColor.DARK_RED + "Koniec gry!", "", 10, 20, 10);
-            }
-
+    
+    public int getRoundNumber() {
+        return this.roundNumber;
+    }
+    
+    public void killPlayer(final PBTeamPlayer player) {
+        if (!player.isInGame()) {
+            return;
         }
-    }
-
-    public void killPlayer(PBTeamPlayer player) {
+        player.setKilled(true);
+        player.setStage(11);
         player.getPlayer().setGameMode(GameMode.SPECTATOR);
     }
-
-    public PBTeamPlayer getPBPlayer(Player player) {
-        PBTeamPlayer pbplayer = null;
-        if (this.getTeamRed().getPlayer1().getPlayer().equals(player)) {
-            pbplayer = this.getTeamRed().getPlayer1();
-
-        } else if (this.getTeamRed().getPlayer2().getPlayer().equals(player)) {
-            pbplayer = this.getTeamRed().getPlayer2();
-
-        } else if (this.getTeamRed().getPlayer3().getPlayer().equals(player)) {
-            pbplayer = this.getTeamRed().getPlayer3();
-
-        } else if (this.getTeamBlue().getPlayer1().getPlayer().equals(player)) {
-            pbplayer = this.getTeamBlue().getPlayer1();
-
-        } else if (this.getTeamBlue().getPlayer2().getPlayer().equals(player)) {
-            pbplayer = this.getTeamBlue().getPlayer2();
-
-        } else if (this.getTeamBlue().getPlayer3().getPlayer().equals(player)) {
-            pbplayer = this.getTeamBlue().getPlayer3();
+    
+    public PBTeamPlayer getPBPlayer(final Player player) {
+        for (final PBTeamPlayer i : this.getAllPBPlayers()) {
+            if (i.getPlayer().equals(player)) {
+                return i;
+            }
         }
-        return pbplayer;
+        return null;
     }
-
-    public int getID() {
-        return ID;
+    
+    public String getID() {
+        return this.ID;
     }
-
-    public void runChecker() {
-        ArrayList<PBTeamPlayer> teamPlayers = new ArrayList<>();
-        teamPlayers.add(TeamBlue.getPlayer1());
-        teamPlayers.add(TeamBlue.getPlayer2());
-        teamPlayers.add(TeamBlue.getPlayer3());
-        teamPlayers.add(TeamRed.getPlayer1());
-        teamPlayers.add(TeamRed.getPlayer2());
-        teamPlayers.add(TeamRed.getPlayer3());
+    
+    public void claimStage(final TeamTag teamTag) {
+        final Team enemyTeam = this.getTeamByTag(teamTag);
+        final ChatColor enemyTeamColor = (enemyTeam.getTeamTag() == TeamTag.BLUE) ? ChatColor.BLUE : ChatColor.RED;
+        final String enemyTeamName = (enemyTeam.getTeamTag() == TeamTag.RED) ? "czerwona" : "niebieska";
+        for (final PBTeamPlayer i : enemyTeam.getPBPlayers()) {
+            if (i.isInGame()) {
+                i.raiseStage();
+            }
+        }
+        for (Player p : this.instance.getAllPlayers()) {
+            p.sendMessage(ChatColor.BOLD + "" + enemyTeamColor + "Druzyna " + enemyTeamName + " zdobywa strefe!");
+        }
+        enemyTeam.claimingStage = true;
         new BukkitRunnable() {
-            @Override
             public void run() {
-                if (!instance.inGame) {
+                for (final PBTeamPlayer enemyTeamPlayer : enemyTeam.getPBPlayers()) {
+                    if (!enemyTeamPlayer.isInGame()) {
+                        continue;
+                    }
+                    final int e = (enemyTeam.getTeamTag() == TeamTag.RED) ? -1 : 1;
+                    if (enemyTeamPlayer.getCurrentStage().getID() != enemyTeamPlayer.getStage() + e) {
+                        continue;
+                    }
+                    enemyTeamPlayer.getPlayer().teleport(Arena.this.instance.stages.get(enemyTeamPlayer.getStage()).getTeleportByNumber(enemyTeam.getPBPlayerNumber(enemyTeamPlayer)));
+                }
+                Arena.this.TeamRed.claimingStage = false;
+            }
+        }.runTaskLater((Plugin)ProBending.plugin, 60L);
+    }
+    
+    public void runChecker() {
+        final ArrayList<PBTeamPlayer> teamPlayers = new ArrayList<PBTeamPlayer>(this.getAllPBPlayers());
+        new BukkitRunnable() {
+            public void run() {
+                if (!Arena.this.instance.inGame) {
                     this.cancel();
                 }
-                for (PBTeamPlayer player : teamPlayers) {
-                    if (!player.isInGame() || player.getTeam().claimingStage) {
-                        break;
-                    }
-                    StageEnum stage = StageEnum.getFromBiome(player.getPlayer().getLocation().getBlock().getBiome().toString()); // 3
-                    StageEnum currentStage = StageEnum.getFromID(player.getStage()); // 4
-                    TeamTag playerTag = player.getTeam().getTeamTag();
-                    if (stage == StageEnum.WholeArena) {
-                        // TODO: System karania
-                        // TODO: TieBreaker
-                        // TODO: Punktacja
-                        // TODO: Komenda do dodawania graczy
-                        // TODO: Koniec rundy
-                        player.getPlayer().teleport(instance.stages.get(currentStage.getID()).getCenter());
-                        break;
-
-                    }
-
-                        // RED
-                    if (playerTag == TeamTag.RED) {
-
-                        // STAGE BACKWARD
-                        if (stage.getID() < currentStage.getID()) {
-                            player.lowerStage();
-
-                            // CLAIMING STAGE FOR BLUE
-                            if (TeamRed.getPlayer1().getStage() <= player.getStage() && TeamRed.getPlayer2().getStage() <= player.getStage() && TeamRed.getPlayer3().getStage() <= player.getStage()) {
-                                TeamBlue.getPlayer1().raiseStage();
-                                TeamBlue.getPlayer2().raiseStage();
-                                TeamBlue.getPlayer3().raiseStage();
-                                for (Player p : instance.getAllPlayers()) {
-                                    p.sendMessage(ChatColor.BOLD + "" + ChatColor.BLUE + "Druzyna niebieska zdobywa strefe!");
-                                }
-                                TeamRed.claimingStage = true;
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        if (TeamBlue.getPlayer1().getStage() == stage.getID() - 1) {
-                                            TeamBlue.getPlayer1().getPlayer().teleport(instance.stages.get(TeamBlue.getPlayer1().getStage()).getPlayer1Teleport());
-                                        }
-                                        if (TeamBlue.getPlayer2().getStage() == stage.getID() - 1) {
-                                            TeamBlue.getPlayer2().getPlayer().teleport(instance.stages.get(TeamBlue.getPlayer2().getStage()).getPlayer2Teleport());
-                                        }
-                                        if (TeamBlue.getPlayer3().getStage() == stage.getID() - 1) {
-                                            TeamBlue.getPlayer3().getPlayer().teleport(instance.stages.get(TeamBlue.getPlayer3().getStage()).getPlayer3Teleport());
-                                        }
-                                        TeamRed.claimingStage = false;
-                                    }
-                                }.runTaskLater(ProBending.plugin, 60);
-
-                                // KNOCKOUT
-                            } else {
-                                if (!player.isInGame()) {
-                                    instance.killPlayer(player);
-                                    for (Player p : instance.getAllPlayers()) {
-                                        p.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Player " + player.getPlayer().getDisplayName() + " dostal K-O!");
-                                    }
-                                }
-                            }
-
-                            // WARNING FORWARD
-                        } else if (stage.getID() > currentStage.getID()) {
-                            player.getPlayer().setVelocity(stages.get(player.getStage()).getCenter().subtract(player.getPlayer().getLocation()).toVector().normalize().multiply(3));
-                            player.getPlayer().sendMessage(ChatColor.BOLD + "Jeszcze nie przejales tej strefy!");
+                for (final PBTeamPlayer player : teamPlayers) {
+                    if (player.isInGame()) {
+                        if (player.getTeam().claimingStage) {
+                            continue;
                         }
-
-
-                        // BLUE
-                    } else {
-
-                            // STAGE BACKWARD
-                        if (stage.getID() > currentStage.getID()) {
+                        StageEnum stage = player.getCurrentStage();
+                        if (!player.isInTieBreaker() && (stage.getID() == 12 || stage.getID() == 13)) {
+                            stage = StageEnum.getFromID((stage.getID() == 12) ? 4 : 5);
+                        }
+                        final StageEnum currentStage = StageEnum.getFromID(player.getStage());
+                        final TeamTag playerTag = player.getTeam().getTeamTag();
+                        final Team team = Arena.this.instance.getTeamByTag(playerTag);
+                        final ChatColor teamColor = (playerTag == TeamTag.BLUE) ? ChatColor.BLUE : ChatColor.RED;
+                        if (stage == StageEnum.WholeArena) {
+                            player.getPlayer().teleport(Arena.this.instance.stages.get(currentStage.getID()).getTeleportByNumber(team.getPBPlayerNumber(player)));
+                        }
+                        else if (stage.getID() < currentStage.getID()) {
                             player.lowerStage();
-
-                            // CLAIMING STAGE FOR RED
-                            if (TeamBlue.getPlayer1().getStage() >= player.getStage() && TeamBlue.getPlayer2().getStage() >= player.getStage() && TeamBlue.getPlayer3().getStage() >= player.getStage()) {
-                                TeamRed.getPlayer1().raiseStage();
-                                TeamRed.getPlayer2().raiseStage();
-                                TeamRed.getPlayer3().raiseStage();
-                                for (Player p : instance.getAllPlayers()) {
-                                    p.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Druzyna czerwona zdobywa strefe!");
+                            if (team.getPlayer1().getStage() <= player.getStage() && team.getPlayer2().getStage() <= player.getStage() && team.getPlayer3().getStage() <= player.getStage()) {
+                                Arena.this.instance.claimStage((team.getTeamTag() == TeamTag.BLUE) ? TeamTag.RED : TeamTag.BLUE);
+                            }
+                            else {
+                                if (player.isInGame()) {
+                                    continue;
                                 }
-                                TeamRed.claimingStage = true;
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        if (TeamRed.getPlayer1().getStage() == stage.getID() - 1) {
-                                            TeamRed.getPlayer1().getPlayer().teleport(instance.stages.get(TeamRed.getPlayer1().getStage()).getPlayer1Teleport());
-                                        }
-                                        if (TeamRed.getPlayer2().getStage() == stage.getID() - 1) {
-                                            TeamRed.getPlayer2().getPlayer().teleport(instance.stages.get(TeamRed.getPlayer2().getStage()).getPlayer2Teleport());
-                                        }
-                                        if (TeamRed.getPlayer3().getStage() == stage.getID() - 1) {
-                                            TeamRed.getPlayer3().getPlayer().teleport(instance.stages.get(TeamRed.getPlayer3().getStage()).getPlayer3Teleport());
-                                        }
-                                        TeamRed.claimingStage = false;
-                                    }
-                                }.runTaskLater(ProBending.plugin, 60);
-
-                                // KNOCKOUT
-                            } else {
-                                if (!player.isInGame()) {
-                                    instance.killPlayer(player);
-                                    for (Player p : instance.getAllPlayers()) {
-                                        p.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Player " + player.getPlayer().getDisplayName() + " dostal K-O!");
-                                    }
+                                Arena.this.instance.killPlayer(player);
+                                for (final Player p : Arena.this.instance.getAllPlayers()) {
+                                    p.sendMessage(ChatColor.BOLD + "" + teamColor + "Player " + player.getPlayer().getDisplayName() + " dostal K-O!");
                                 }
                             }
-
-                            // WARNING FORWARD
-                        } else if (stage.getID() < currentStage.getID()) {
-                            player.getPlayer().setVelocity(stages.get(player.getStage()).getCenter().subtract(player.getPlayer().getLocation()).toVector().normalize().multiply(3));
+                        }
+                        else {
+                            if (stage.getID() <= currentStage.getID()) {
+                                continue;
+                            }
+                            player.getPlayer().setVelocity(Arena.this.stages.get(player.getStage()).getCenter().subtract(player.getPlayer().getLocation()).toVector().normalize().multiply(3));
                             player.getPlayer().sendMessage(ChatColor.BOLD + "Jeszcze nie przejales tej strefy!");
                         }
                     }
                 }
-
             }
-        }.runTaskTimer(ProBending.plugin, 0, 5);
-
+        }.runTaskTimer((Plugin)ProBending.plugin, 0L, 5L);
     }
-
+    
     public Location getCenter() {
-        return center;
+        return this.center;
     }
-
+    
     public Team getTeamBlue() {
-        return TeamBlue;
+        return this.TeamBlue;
     }
-
+    
     public Team getTeamRed() {
-        return TeamRed;
+        return this.TeamRed;
     }
-
+    
     public ArrayList<Player> getAllPlayers() {
-        ArrayList<Player> i = new ArrayList<>();
-        i.addAll(TeamRed.getPlayers());
-        i.addAll(TeamBlue.getPlayers());
+        final ArrayList<Player> i = new ArrayList<Player>();
+        i.addAll(this.TeamRed.getPlayers());
+        i.addAll(this.TeamBlue.getPlayers());
+        i.removeIf(Objects::isNull);
         return i;
     }
-
-    public Team getTeamByTag(TeamTag teamTag) {
-        return teamTag == TeamTag.BLUE ? TeamBlue : TeamRed;
+    
+    public Team getTeamByTag(final TeamTag teamTag) {
+        return (teamTag == TeamTag.BLUE) ? this.TeamBlue : this.TeamRed;
     }
-
+    
     public ArrayList<PBTeamPlayer> getAllPBPlayers() {
-        ArrayList<PBTeamPlayer> i = new ArrayList<>();
-        i.addAll(TeamBlue.getPBPlayers());
-        i.addAll(TeamRed.getPBPlayers());
+        final ArrayList<PBTeamPlayer> i = new ArrayList<PBTeamPlayer>();
+        i.addAll(this.TeamBlue.getPBPlayers());
+        i.addAll(this.TeamRed.getPBPlayers());
+        i.removeIf(Objects::isNull);
         return i;
     }
-
+    
     public void setUpArena() {
         int i = 0;
-
-        for (StageEnum e : StageEnum.values()) {
-            i++;
+        for (final StageEnum e : StageEnum.values()) {
+            ++i;
             this.stages.put(i, new Stage(e, this));
         }
-
-
-
     }
-
-    public Stage getStage(int ID) {
+    
+    public Stage getStage(final int ID) {
         return this.stages.get(ID);
     }
-
+    
     public boolean isInGame() {
         return this.inGame;
     }
+    
+    static {
+        Arena.Arenas = new ArrayList<Arena>();
+        Arena.playersPlaying = new ArrayList<Player>();
+    }
 }
-
-

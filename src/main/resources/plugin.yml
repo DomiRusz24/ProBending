@@ -1,7 +1,6 @@
 name: ProBending
-version: ${project.version}
+version: 1.12.2
 main: me.domirusz24.pk.probending.probending.ProBending
-softdepend: [ProjectKorra]
 commands:
   arena:
     description: Ustawienia areny
