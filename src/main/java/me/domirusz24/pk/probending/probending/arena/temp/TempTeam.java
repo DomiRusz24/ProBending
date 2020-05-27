@@ -1,5 +1,6 @@
 package me.domirusz24.pk.probending.probending.arena.temp;
 
+import me.domirusz24.pk.probending.probending.ProBending;
 import org.bukkit.entity.*;
 import java.util.*;
 import java.util.function.*;
@@ -7,9 +8,9 @@ import java.util.function.*;
 public class TempTeam
 {
     public static HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
-    Player player1;
-    Player player2;
-    Player player3;
+    private String player1;
+    private String player2;
+    private String player3;
     
     public TempTeam() {
         this.player1 = null;
@@ -49,17 +50,17 @@ public class TempTeam
             TempTeam.playersWaiting.get(player).removePlayer(player);
         }
         if (this.player1 == null) {
-            this.player1 = player;
+            this.player1 = player.getName();
             TempTeam.playersWaiting.put(player, this);
             return;
         }
         if (this.player2 == null) {
-            this.player2 = player;
+            this.player2 = player.getName();
             TempTeam.playersWaiting.put(player, this);
             return;
         }
         if (this.player3 == null) {
-            this.player3 = player;
+            this.player3 = player.getName();
             TempTeam.playersWaiting.put(player, this);
         }
     }
@@ -68,40 +69,36 @@ public class TempTeam
         if (!this.getAllPlayers().contains(player)) {
             return;
         }
-        if (this.player1.equals(player)) {
+        if (this.player1.equals(player.getName())) {
             this.player1 = null;
             TempTeam.playersWaiting.remove(player);
             return;
         }
-        if (this.player2.equals(player)) {
+        if (this.player2.equals(player.getName())) {
             this.player2 = null;
             TempTeam.playersWaiting.remove(player);
             return;
         }
-        if (this.player3.equals(player)) {
+        if (this.player3.equals(player.getName())) {
             this.player3 = null;
             TempTeam.playersWaiting.remove(player);
         }
     }
 
     public void removePlayer(final String name) {
-        for (Player player : this.getAllPlayers()) {
-            if (player.getName().equals(name)) {
-                if (this.player1.equals(player)) {
-                    this.player1 = null;
-                    TempTeam.playersWaiting.remove(player);
-                    return;
-                }
-                if (this.player2.equals(player)) {
-                    this.player2 = null;
-                    TempTeam.playersWaiting.remove(player);
-                    return;
-                }
-                if (this.player3.equals(player)) {
-                    this.player3 = null;
-                    TempTeam.playersWaiting.remove(player);
-                }
-            }
+        if (this.player1.equals(name)) {
+            this.player1 = null;
+            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
+            return;
+        }
+        if (this.player2.equals(name)) {
+            this.player2 = null;
+            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
+            return;
+        }
+        if (this.player3.equals(name)) {
+            this.player3 = null;
+            TempTeam.playersWaiting.remove(ProBending.plugin.getServer().getPlayer(name));
         }
     }
     
@@ -110,19 +107,19 @@ public class TempTeam
     }
     
     public List<Player> getAllPlayers() {
-        final List<Player> list = new ArrayList<Player>();
-        list.add(this.player1);
-        list.add(this.player2);
-        list.add(this.player3);
+        final List<Player> list = new ArrayList<>();
+        list.add(getPlayer1());
+        list.add(getPlayer2());
+        list.add(getPlayer3());
         list.removeIf(Objects::isNull);
         return list;
     }
     
     public List<Player> getAllPlayers(final boolean nullValues) {
-        final List<Player> list = new ArrayList<Player>();
-        list.add(this.player1);
-        list.add(this.player2);
-        list.add(this.player3);
+        final List<Player> list = new ArrayList<>();
+        list.add(getPlayer3());
+        list.add(getPlayer2());
+        list.add(getPlayer1());
         if (!nullValues) {
             list.removeIf(Objects::isNull);
         }
@@ -134,15 +131,15 @@ public class TempTeam
     }
     
     public Player getPlayer1() {
-        return this.player1;
+        return this.player1 == null ? null : ProBending.plugin.getServer().getPlayer(this.player1);
     }
     
     public Player getPlayer2() {
-        return this.player2;
+        return this.player2 == null ? null : ProBending.plugin.getServer().getPlayer(this.player2);
     }
     
     public Player getPlayer3() {
-        return this.player3;
+        return this.player3 == null ? null : ProBending.plugin.getServer().getPlayer(this.player3);
     }
 }
     

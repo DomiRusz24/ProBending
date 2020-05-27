@@ -4,8 +4,6 @@ main: me.domirusz24.pk.probending.probending.ProBending
 commands:
   arena:
     description: Ustawienia areny
-    usage: /<command>
   pbc:
     description: Korzystanie z areny
-    usage: /<command>
 
