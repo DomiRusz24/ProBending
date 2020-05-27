@@ -1,0 +1,12 @@
+name: ProBending
+version: ${project.version}
+main: me.domirusz24.pk.probending.probending.ProBending
+softdepend: [ProjectKorra]
+commands:
+  arena:
+    description: Ustawienia areny
+    usage: /<command>
+  pbc:
+    description: Korzystanie z areny
+    usage: /<command>
+
