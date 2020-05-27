@@ -6,7 +6,7 @@ import java.util.function.*;
 
 public class TempTeam
 {
-    public static HashMap<Player, TempTeam> playersWaiting;
+    public static HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
     Player player1;
     Player player2;
     Player player3;
@@ -83,6 +83,27 @@ public class TempTeam
             TempTeam.playersWaiting.remove(player);
         }
     }
+
+    public void removePlayer(final String name) {
+        for (Player player : this.getAllPlayers()) {
+            if (player.getName().equals(name)) {
+                if (this.player1.equals(player)) {
+                    this.player1 = null;
+                    TempTeam.playersWaiting.remove(player);
+                    return;
+                }
+                if (this.player2.equals(player)) {
+                    this.player2 = null;
+                    TempTeam.playersWaiting.remove(player);
+                    return;
+                }
+                if (this.player3.equals(player)) {
+                    this.player3 = null;
+                    TempTeam.playersWaiting.remove(player);
+                }
+            }
+        }
+    }
     
     public void removeAllPlayers() {
         this.getAllPlayers().forEach(this::removePlayer);
@@ -123,8 +144,7 @@ public class TempTeam
     public Player getPlayer3() {
         return this.player3;
     }
-    
-    static {
-        TempTeam.playersWaiting = new HashMap<Player, TempTeam>();
-    }
 }
+    
+
+

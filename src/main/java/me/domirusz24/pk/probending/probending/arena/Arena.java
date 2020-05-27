@@ -6,20 +6,32 @@ import org.bukkit.*;
 import org.bukkit.scheduler.*;
 import me.domirusz24.pk.probending.probending.*;
 import org.bukkit.plugin.*;
+import org.graalvm.compiler.hotspot.EconomyCompilerConfigurationFactory;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.function.*;
 
 public class Arena
 {
-    public static ArrayList<Arena> Arenas;
-    public static ArrayList<Player> playersPlaying;
-    public static Location spawn;
+
+    public static Location spawn() {
+        return ConfigMethods.getLocation("spawn");
+    }
+
+    public static void setSpawn(Location location) throws IOException {
+        ConfigMethods.saveLocation("spawn", location);
+    }
+
+
+
+    public static ArrayList<Arena> Arenas = new ArrayList<>();
+    public static ArrayList<Player> playersPlaying = new ArrayList<>();
     public TempTeam blueTempTeam;
     public TempTeam redTempTeam;
     private boolean inGame;
     private Arena instance;
     private HashMap<Integer, Stage> stages;
-    private Location center;
     private Team TeamBlue;
     private Team TeamRed;
     private String ID;
@@ -34,13 +46,14 @@ public class Arena
         return null;
     }
     
-    public Arena(final Location location) {
+    public Arena(final Location location, String ID) throws IOException {
         this.inGame = false;
         this.stages = new HashMap<>();
         this.roundNumber = 0;
-        this.center = location;
         Arena.Arenas.add(this);
-        this.ID = String.valueOf(Arena.Arenas.size());
+        this.ID = ID;
+        System.out.println(ID);
+        setCenter(location);
         this.blueTempTeam = new TempTeam();
         this.redTempTeam = new TempTeam();
         this.setUpArena();
@@ -98,7 +111,7 @@ public class Arena
                 Arena.playersPlaying.remove(player);
                 this.getPBPlayer(player).removePlayer();
                 player.setGameMode(GameMode.SURVIVAL);
-                player.teleport(Arena.spawn);
+                player.teleport(Arena.spawn());
                 player.sendTitle(ChatColor.DARK_RED + "Koniec gry!", "", 10, 20, 10);
             }
         }
@@ -264,7 +277,12 @@ public class Arena
     }
     
     public Location getCenter() {
-        return this.center;
+       return ConfigMethods.getLocation("Arena.nr" + this.ID + ".center");
+    }
+
+    public void setCenter(Location location) throws IOException {
+        System.out.println(ID);
+        ConfigMethods.saveLocation("Arena.nr" + this.ID + ".center", location);
     }
     
     public Team getTeamBlue() {

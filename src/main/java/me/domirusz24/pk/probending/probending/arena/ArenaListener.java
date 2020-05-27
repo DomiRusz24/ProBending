@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ArenaListener implements Listener
 {
-    public static ArrayList<Player> freezePlayers;
+    public static ArrayList<Player> freezePlayers = new ArrayList<>();
     
     public void onMove(final PlayerMoveEvent event) {
         if (ArenaListener.freezePlayers.contains(event.getPlayer())) {

@@ -21,6 +21,7 @@ public class PBCCompleter implements TabCompleter
                 complete.add("add");
                 complete.add("remove");
                 complete.add("start");
+                complete.add("resetTempTeams");
             }
             if (args.length == 3) {
                 for (final Player player : ProBending.plugin.getServer().getOnlinePlayers()) {

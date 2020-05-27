@@ -28,7 +28,7 @@ public class PBTeamPlayer
     
     public void removePlayer() {
         this.player.setGameMode(GameMode.SURVIVAL);
-        this.player.teleport(Arena.spawn);
+        this.player.teleport(Arena.spawn());
         this.inGame = false;
         Arena.playersPlaying.remove(player);
     }
