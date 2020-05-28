@@ -33,6 +33,7 @@ public final class ProBending extends JavaPlugin
         while (Config.get().isSet("Arena.nr" + String.valueOf(i))) {
             try {
                 new Arena(ConfigMethods.getLocation("Arena.nr" + String.valueOf(i) + ".center"), String.valueOf(i));
+                System.out.println("Utworzono arene nr. " + String.valueOf(i));
             } catch (IOException e) {
                 e.printStackTrace();
             }

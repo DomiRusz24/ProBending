@@ -312,11 +312,11 @@ public class Arena
     }
     
     public void setUpArena() {
-        int i = 0;
         for (final StageEnum e : StageEnum.values()) {
-            ++i;
-            this.stages.put(i, new Stage(e, this));
+            this.stages.put(e.getID(), new Stage(e, this));
+            System.out.println("Tworzenie areny " + stages.get(e.getID()).getStage().toString() + "...");
         }
+        System.out.println("Zakonono tworzenie aren!");
     }
     
     public Stage getStage(final int ID) {

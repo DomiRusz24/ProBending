@@ -16,17 +16,20 @@ public class ArenaCreateCompleter implements TabCompleter
                 for (final Arena arena : Arena.Arenas) {
                     complete.add(String.valueOf(arena.getID()));
                 }
-            }
+            }else
             if (args.length == 2) {
                 for (final StageEnum e : StageEnum.values()) {
                     complete.add(e.toString());
                 }
-            }
+            }else
             if (args.length == 3) {
                 complete.add("player1");
                 complete.add("player2");
                 complete.add("player3");
                 complete.add("center");
+            }else
+            if (args.length == 4) {
+                complete.add("teleport");
             }
             return complete;
         }

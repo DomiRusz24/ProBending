@@ -4,18 +4,18 @@ import java.util.*;
 
 public enum StageEnum
 {
-    Line(14, (TeamTag)null, "SWAMPLAND"), 
-    TieBreakerBLUE(13, TeamTag.BLUE, "RIVER"), 
+    BackRED(1, TeamTag.RED, "BEACHES"),
+    ThirdRED(2, TeamTag.RED, "MESA"),
+    SecondRED(3, TeamTag.RED, "SAVANNA"),
+    FirstRED(4, TeamTag.RED, "JUNGLE_HILLS"),
+    FirstBLUE(5, TeamTag.BLUE, "MESA_ROCK"),
+    SecondBLUE(6, TeamTag.BLUE, "FOREST"),
+    ThirdBLUE(7, TeamTag.BLUE, "JUNGLE"),
+    BackBLUE(8, TeamTag.BLUE, "OCEAN"),
+    WholeArena(11, null, "PLAINS"),
     TieBreakerRED(12, TeamTag.RED, "STONE_BEACH"),
-    WholeArena(11, (TeamTag)null, "PLAINS"), 
-    BackBLUE(8, TeamTag.BLUE, "OCEAN"), 
-    ThirdBLUE(7, TeamTag.BLUE, "JUNGLE"), 
-    SecondBLUE(6, TeamTag.BLUE, "FOREST"), 
-    FirstBLUE(5, TeamTag.BLUE, "MESA_ROCK"), 
-    FirstRED(4, TeamTag.RED, "JUNGLE_HILLS"), 
-    SecondRED(3, TeamTag.RED, "SAVANNA"), 
-    ThirdRED(2, TeamTag.RED, "MESA"), 
-    BackRED(1, TeamTag.RED, "BEACHES");
+    TieBreakerBLUE(13, TeamTag.BLUE, "RIVER"),
+    Line(14, null, "SWAMPLAND");
     
     private final int ID;
     private final String biome;
@@ -26,6 +26,8 @@ public enum StageEnum
         this.biome = biome;
         this.teamTag = teamTag;
     }
+
+
     
     public int getID() {
         return this.ID;
@@ -55,8 +57,7 @@ public enum StageEnum
                 return e;
             }
         }
-        System.out.println("Niepoprawny biome (" + biome + ")");
-        throw new IllegalArgumentException();
+        return StageEnum.WholeArena;
     }
     
     public static ArrayList<StageEnum> getTeam(final TeamTag tag) {
@@ -68,4 +69,34 @@ public enum StageEnum
         }
         return enums;
     }
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case Line: return "Line";
+            case TieBreakerBLUE: return "1BLUE";
+            case TieBreakerRED: return "1RED";
+            case WholeArena: return "Arena";
+            case BackBLUE: return "5BLUE";
+            case ThirdBLUE: return "4BLUE";
+            case SecondBLUE: return "3BLUE";
+            case FirstBLUE: return "2BLUE";
+            case FirstRED: return "2RED";
+            case SecondRED: return "3RED";
+            case ThirdRED: return "4RED";
+            case BackRED:return "5RED";
+            default: return null;
+        }
+    }
+
+    public static StageEnum getFromConfigName(String string) {
+        for (StageEnum i : StageEnum.values()) {
+            if (string.equalsIgnoreCase(i.toString())) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+
 }

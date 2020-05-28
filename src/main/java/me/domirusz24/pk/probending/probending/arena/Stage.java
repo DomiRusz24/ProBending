@@ -12,7 +12,7 @@ public class Stage
     
     public Stage(final StageEnum stage, final Arena arena) {
         this.stage = stage;
-        configEntry = "Arena.nr" + arena.getID() + ".stages." + stage;
+        configEntry = "Arena.nr" + arena.getID() + ".stages." + stage.toString();
     }
     
     public Location getTeleportByNumber(final int value) {
