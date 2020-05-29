@@ -10,12 +10,14 @@ public class ArenaListener implements Listener
 {
     public static ArrayList<Player> freezePlayers = new ArrayList<>();
     
-    public void onMove(final PlayerMoveEvent event) {
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
         if (ArenaListener.freezePlayers.contains(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
     
+    @EventHandler
     public void onLeave(final PlayerQuitEvent event) {
         if (Arena.playersPlaying.contains(event.getPlayer())) {
             for (final Arena arena : Arena.Arenas) {
@@ -25,8 +27,8 @@ public class ArenaListener implements Listener
                 }
             }
         }
-        if (TempTeam.playersWaiting.containsKey(event.getPlayer().getName())) {
-            TempTeam.playersWaiting.get(event.getPlayer().getName()).removePlayer(event.getPlayer().getName());
+        if (TempTeam.playersWaiting.containsKey(event.getPlayer())) {
+            TempTeam.playersWaiting.get(event.getPlayer()).removePlayer(event.getPlayer());
         }
     }
 }

@@ -13,6 +13,7 @@ public class ArenaCreateCompleter implements TabCompleter
             if (args.length == 1) {
                 complete.add("create");
                 complete.add("setspawn");
+                complete.add("teleportspawn");
                 for (final Arena arena : Arena.Arenas) {
                     complete.add(String.valueOf(arena.getID()));
                 }

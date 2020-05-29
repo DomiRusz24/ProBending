@@ -21,6 +21,7 @@ public class PBCCompleter implements TabCompleter
                 complete.add("add");
                 complete.add("remove");
                 complete.add("start");
+                complete.add("forcestart");
                 complete.add("resetTempTeams");
             }
             if (args.length == 3) {

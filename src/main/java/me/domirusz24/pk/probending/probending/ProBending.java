@@ -28,6 +28,7 @@ public final class ProBending extends JavaPlugin
         this.getCommand("pbc").setExecutor(new ProBendingControlCommand());
         this.getCommand("arena").setTabCompleter(new ArenaCreateCompleter());
         this.getCommand("pbc").setTabCompleter(new PBCCompleter());
+        this.getConfig().addDefault("stage.y", 30);
         Config.setup();
         int i = 1;
         while (Config.get().isSet("Arena.nr" + String.valueOf(i))) {

@@ -89,7 +89,8 @@ public class Team
         i.add(this.player1.getPlayer());
         i.add(this.player2.getPlayer());
         i.add(this.player3.getPlayer());
-        i.removeIf(Objects::isNull);
+        while (i.remove(null)) {
+        }
         return i;
     }
     
@@ -99,7 +100,8 @@ public class Team
         i.add(this.player2.getPlayer());
         i.add(this.player3.getPlayer());
         if (!nullValues) {
-            i.removeIf(Objects::isNull);
+            while (i.remove(null)) {
+            }
         }
         return i;
     }
@@ -110,21 +112,23 @@ public class Team
     
     public ArrayList<PBTeamPlayer> getPBPlayers(final boolean nullValues) {
         final ArrayList<PBTeamPlayer> i = new ArrayList<PBTeamPlayer>();
-        i.add(this.player1);
-        i.add(this.player2);
-        i.add(this.player3);
+        i.add(this.player1.getPlayer() == null ? null : this.player1);
+        i.add(this.player2.getPlayer() == null ? null : this.player2);
+        i.add(this.player3.getPlayer() == null ? null : this.player3);
         if (!nullValues) {
-            i.removeIf(Objects::isNull);
+            while (i.remove(null)) {
+            }
         }
         return i;
     }
     
     public ArrayList<PBTeamPlayer> getPBPlayers() {
-        final ArrayList<PBTeamPlayer> i = new ArrayList<PBTeamPlayer>();
-        i.add(this.player1);
-        i.add(this.player2);
-        i.add(this.player3);
-        i.removeIf(Objects::isNull);
+        final ArrayList<PBTeamPlayer> i = new ArrayList<>();
+        i.add(this.player1.getPlayer() == null ? null : this.player1);
+        i.add(this.player2.getPlayer() == null ? null : this.player2);
+        i.add(this.player3.getPlayer() == null ? null : this.player3);
+        while (i.remove(null)) {
+        }
         return i;
     }
 }

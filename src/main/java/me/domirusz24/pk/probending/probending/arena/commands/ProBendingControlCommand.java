@@ -1,5 +1,6 @@
 package me.domirusz24.pk.probending.probending.arena.commands;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
 import org.bukkit.*;
@@ -31,7 +32,7 @@ public class ProBendingControlCommand implements CommandExecutor
                         player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Takie ID areny nie istnieje!");
                         return true;
                     }
-                    final ArrayList<String> info = new ArrayList<String>();
+                    final ArrayList<String> info = new ArrayList<>();
                     final ChatColor inGame = arena.isInGame() ? ChatColor.RED : ChatColor.GREEN;
                     info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
                     info.add(ChatColor.BOLD + "" + inGame + "Arena " + arena.getID());
@@ -71,10 +72,7 @@ public class ProBendingControlCommand implements CommandExecutor
                             info.add("Gracz 3: NIE DODANY");
                         }
                         info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
-                        final ArrayList<String> list = info;
-                        final Player player3 = player;
-                        Objects.requireNonNull(player3);
-                        list.forEach(player3::sendMessage);
+                        info.forEach(player::sendMessage);
                         return true;
                     }
                     info.add(ChatColor.BOLD + "" + ChatColor.ITALIC + "DRUZYNY: ");
@@ -123,23 +121,32 @@ public class ProBendingControlCommand implements CommandExecutor
                             arena.startGameWithFeedBack(player);
                             return true;
                         }
+                        case "forcestart": {
+                            if (arena.isInGame()) {
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
+                                return true;
+                            }
+                            arena.forceStart(player);
+                            return true;
+                        }
                         case "stop": {
                             if (!arena.isInGame()) {
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
                                 return true;
                             }
+                            arena.stopGame();
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zakonczono gre!");
                             return true;
                         }
                         case "resetTempTeams": {
                             if (arena.isInGame()) {
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
-                                return true;
                             } else {
                                 arena.getTempTeamByTag(TeamTag.BLUE).removeAllPlayers();
                                 arena.getTempTeamByTag(TeamTag.RED).removeAllPlayers();
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto wszystkich playerow z oczekujacych druzyn!");
-                                return true;
                             }
+                            return true;
                         }
                         case "add": {
                             player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj jakiego gracza dodac!");

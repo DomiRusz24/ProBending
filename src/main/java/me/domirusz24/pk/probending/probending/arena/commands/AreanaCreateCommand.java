@@ -42,6 +42,15 @@ public class AreanaCreateCommand implements CommandExecutor
                         }
                         player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono spawn!");
                         return true;
+                    } else if (args[0].equalsIgnoreCase("teleportspawn")) {
+                        if (Arena.spawn() == null) {
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Spawn nie istnieje!");
+                            return true;
+                        } else {
+                            player.teleport(Arena.spawn());
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales przeteleportowany na spawn!");
+                            return true;
+                        }
                     }
                     if (args.length == 1) {
                         player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj ID strefy!");

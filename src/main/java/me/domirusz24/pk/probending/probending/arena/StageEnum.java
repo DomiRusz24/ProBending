@@ -4,26 +4,28 @@ import java.util.*;
 
 public enum StageEnum
 {
-    BackRED(1, TeamTag.RED, "BEACHES"),
-    ThirdRED(2, TeamTag.RED, "MESA"),
-    SecondRED(3, TeamTag.RED, "SAVANNA"),
-    FirstRED(4, TeamTag.RED, "JUNGLE_HILLS"),
-    FirstBLUE(5, TeamTag.BLUE, "MESA_ROCK"),
-    SecondBLUE(6, TeamTag.BLUE, "FOREST"),
-    ThirdBLUE(7, TeamTag.BLUE, "JUNGLE"),
-    BackBLUE(8, TeamTag.BLUE, "OCEAN"),
-    WholeArena(11, null, "PLAINS"),
-    TieBreakerRED(12, TeamTag.RED, "STONE_BEACH"),
-    TieBreakerBLUE(13, TeamTag.BLUE, "RIVER"),
-    Line(14, null, "SWAMPLAND");
+    BackRED(1, TeamTag.RED, (byte) 3),
+    ThirdRED(2, TeamTag.RED, (byte) 7),
+    SecondRED(3, TeamTag.RED, (byte) 2),
+    FirstRED(4, TeamTag.RED, (byte) 13),
+    FirstBLUE(5, TeamTag.BLUE, (byte) 4),
+    SecondBLUE(6, TeamTag.BLUE, (byte) 1),
+    ThirdBLUE(7, TeamTag.BLUE, (byte) 10),
+    BackBLUE(8, TeamTag.BLUE, (byte) 0),
+
+
+    WholeArena(11, null, (byte) 12),
+    TieBreakerRED(12, TeamTag.RED, (byte) 9),
+    TieBreakerBLUE(13, TeamTag.BLUE, (byte) 5),
+    Line(14, null, (byte) 15);
     
     private final int ID;
-    private final String biome;
+    private final byte data;
     private final TeamTag teamTag;
     
-    private StageEnum(final int ID, final TeamTag teamTag, final String biome) {
+    private StageEnum(final int ID, final TeamTag teamTag, final byte data) {
         this.ID = ID;
-        this.biome = biome;
+        this.data = data;
         this.teamTag = teamTag;
     }
 
@@ -33,8 +35,8 @@ public enum StageEnum
         return this.ID;
     }
     
-    public String getBiome() {
-        return this.biome;
+    public int getData() {
+        return this.data;
     }
     
     public TeamTag getTeamTag() {
@@ -51,9 +53,9 @@ public enum StageEnum
         throw new IllegalArgumentException();
     }
     
-    public static StageEnum getFromBiome(final String biome) {
+    public static StageEnum getFromData(final byte data) {
         for (final StageEnum e : values()) {
-            if (e.biome.equalsIgnoreCase(biome)) {
+            if (e.data == data) {
                 return e;
             }
         }

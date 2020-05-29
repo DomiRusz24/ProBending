@@ -1,14 +1,16 @@
 package me.domirusz24.pk.probending.probending.arena;
 
+import me.domirusz24.pk.probending.probending.ProBending;
 import org.bukkit.entity.*;
 import com.projectkorra.projectkorra.*;
 import org.bukkit.*;
+import org.bukkit.material.MaterialData;
 
 public class PBTeamPlayer
 {
     private Player player;
     private BendingPlayer BPlayer;
-    private boolean inTieBreaker;
+    private boolean inTieBreaker = false;
     private boolean inGame;
     private boolean killed;
     private String element;
@@ -20,13 +22,21 @@ public class PBTeamPlayer
         this.inGame = true;
         this.killed = false;
         this.element = element;
-        this.BPlayer = BPlayer;
-        this.player = BPlayer.getPlayer();
+        if (BPlayer == null || BPlayer.getPlayer() == null) {
+            this.BPlayer = null;
+            this.player = null;
+        } else {
+            this.BPlayer = BPlayer;
+            this.player = BPlayer.getPlayer();
+        }
         this.team = team;
-        this.stage = ((team.getTeamTag() == TeamTag.RED) ? 4 : 5);
+        this.stage = ((team.getTeamTag() == TeamTag.RED) ? 4 : 6);
     }
     
     public void removePlayer() {
+        if (player == null) {
+            return;
+        }
         this.player.setGameMode(GameMode.SURVIVAL);
         this.player.teleport(Arena.spawn());
         this.inGame = false;
@@ -34,10 +44,16 @@ public class PBTeamPlayer
     }
     
     public Player getPlayer() {
+        if (player == null) {
+            return null;
+        }
         return this.player;
     }
     
     public BendingPlayer getBPlayer() {
+        if (BPlayer == null) {
+            return null;
+        }
         return this.BPlayer;
     }
     
@@ -50,17 +66,45 @@ public class PBTeamPlayer
     }
     
     public void lowerStage() {
-        this.stage = ((this.team.getTeamTag() == TeamTag.RED) ? (this.stage - 1) : (this.stage + 1));
-        this.player.sendTitle("", ChatColor.BOLD + "" + ChatColor.RED + "Zostales cofniety o strefe!", 2, 20, 2);
+        if (player == null) {
+            return;
+        }
+        this.setStage((this.team.getTeamTag() == TeamTag.RED) ? (this.stage - 1) : (this.stage + 1));
+        this.player.sendTitle("", ChatColor.BOLD + "" + ChatColor.RED + "Zostales cofniety z strefy " + (this.getStage() - 1) + " na strefe " + this.getStage(), 2, 20, 2);
     }
     
     public void raiseStage() {
+        if (player == null) {
+            return;
+        }
         this.stage = ((this.team.getTeamTag() == TeamTag.RED) ? (this.stage + 1) : (this.stage - 1));
-        this.player.sendTitle("", ChatColor.BOLD + "" + ChatColor.GREEN + "Zdobyles strefe!", 2, 50, 2);
+        this.player.sendTitle("", ChatColor.BOLD + "" + ChatColor.GREEN + "Zdobyles strefe " + getStage(), 2, 50, 2);
+    }
+
+    public boolean belowStage(int ID, boolean equal) {
+        if (player == null) {
+            return false;
+        }
+        if (this.getTeam().getTeamTag().equals(TeamTag.BLUE)) {
+            return equal ? this.getCurrentStage().getID() >= ID : this.getCurrentStage().getID() > ID;
+        } else {
+            return equal ? this.getCurrentStage().getID() <= ID : this.getCurrentStage().getID() < ID;
+        }
+    }
+
+    public boolean aboveStage(int ID, boolean equal) {
+        if (player == null) {
+            return false;
+        }
+        if (this.getTeam().getTeamTag().equals(TeamTag.BLUE)) {
+            return equal ? this.getCurrentStage().getID() <= ID : this.getCurrentStage().getID() < ID;
+        } else {
+            return equal ? this.getCurrentStage().getID() >= ID : this.getCurrentStage().getID() > ID;
+        }
     }
     
     public boolean isInGame() {
-        if (this.stage > 8 || this.stage < 1 || this.killed) {
+        if (this.stage == 8 || this.stage == 1 || this.killed) {
             this.inGame = false;
         }
         return this.inGame;
@@ -79,7 +123,21 @@ public class PBTeamPlayer
     }
     
     public StageEnum getCurrentStage() {
-        return StageEnum.getFromBiome(this.getPlayer().getLocation().getBlock().getBiome().toString());
+        if (player == null) {
+            return null;
+        }
+        Location y = this.getPlayer().getLocation();
+        y.setY(ProBending.plugin.getConfig().getInt("stage.y"));
+        StageEnum s = StageEnum.getFromData(y.getBlock().getData());
+        if (s.equals(StageEnum.Line)) {
+            return StageEnum.getFromID(getStage());
+        }
+        if (s.equals(StageEnum.TieBreakerRED) || s.equals(StageEnum.TieBreakerBLUE)) {
+            if (!this.isInTieBreaker()) {
+                return s == StageEnum.TieBreakerRED ? StageEnum.FirstRED : StageEnum.FirstBLUE;
+            }
+        }
+        return s;
     }
     
     public boolean isInTieBreaker() {

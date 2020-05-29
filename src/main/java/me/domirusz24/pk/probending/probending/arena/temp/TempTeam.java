@@ -6,10 +6,10 @@ import java.util.*;
 
 public class TempTeam
 {
-    public static HashMap<String, TempTeam> playersWaiting = new HashMap<>();
-    private String player1;
-    private String player2;
-    private String player3;
+    public static HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
+    private Player player1;
+    private Player player2;
+    private Player player3;
     
     public TempTeam() {
         this.player1 = null;
@@ -42,66 +42,75 @@ public class TempTeam
     }
     
     public void addPlayer(final Player player) {
-        if (this.getAllPlayers().contains(player)) {
+        if (player == null) {
             return;
         }
-        if (TempTeam.playersWaiting.containsKey(player.getName())) {
-            TempTeam.playersWaiting.get(player.getName()).removePlayer(player);
+        if (TempTeam.playersWaiting.containsKey(player)) {
+            TempTeam.playersWaiting.get(player).removePlayer(player);
         }
-        if (this.player1 == null) {
-            this.player1 = player.getName();
-            TempTeam.playersWaiting.put(player.getName(), this);
-            return;
-        }
-        if (this.player2 == null) {
-            this.player2 = player.getName();
-            TempTeam.playersWaiting.put(player.getName(), this);
-            return;
-        }
-        if (this.player3 == null) {
-            this.player3 = player.getName();
-            TempTeam.playersWaiting.put(player.getName(), this);
+        if (player1 == null) {
+            player1 = player;
+            TempTeam.playersWaiting.put(player, this);
+        } else  if (player2 == null) {
+            player2 = player;
+            TempTeam.playersWaiting.put(player, this);
+        } else if (player3 == null) {
+            player3 = player;
+            TempTeam.playersWaiting.put(player, this);
         }
     }
     
     public void removePlayer(final Player player) {
-        if (!this.getAllPlayers().contains(player)) {
+        if (!this.getAllPlayers().contains(player) || player == null) {
             return;
         }
-        if (this.player1.equals(player.getName())) {
-            this.player1 = null;
-            TempTeam.playersWaiting.remove(player.getName());
-            return;
-        }
-        if (this.player2.equals(player.getName())) {
-            this.player2 = null;
-            TempTeam.playersWaiting.remove(player.getName());
-            return;
-        }
-        if (this.player3.equals(player.getName())) {
-            this.player3 = null;
-            TempTeam.playersWaiting.remove(player.getName());
+        if (player.equals(player1)) {
+            TempTeam.playersWaiting.remove(player);
+            player1 = null;
+        } else if (player.equals(player2)) {
+            TempTeam.playersWaiting.remove(player);
+            player2 = null;
+        } else if (player.equals(player3)) {
+            TempTeam.playersWaiting.remove(player);
+            player3 = null;
         }
     }
 
-    public void removePlayer(final String name) {
-        if (this.player1.equals(name)) {
-            this.player1 = null;
-            TempTeam.playersWaiting.remove(name);
-            return;
+    public Player getPlayer(int id) {
+        switch(id) {
+            case 1: {
+                return player1;
+            }
+            case 2: {
+                return player2;
+            }
+            case 3: {
+                return player3;
+            }
+            default: {
+                return null;
+            }
         }
-        if (this.player2.equals(name)) {
-            this.player2 = null;
-            TempTeam.playersWaiting.remove(name);
-            return;
+    }
+
+    public int getPlayerID(Player player) {
+        if (!this.getAllPlayers().contains(player)) {
+            return 0;
         }
-        if (this.player3.equals(name)) {
-            this.player3 = null;
-            TempTeam.playersWaiting.remove(name);
+        int e = 0;
+        for (Player i : this.getAllPlayers(true)) {
+            e++;
+            if (i.equals(player)) {
+                return e;
+            }
         }
+        return 0;
     }
     
     public void removeAllPlayers() {
+        if (getAllPlayers() == null) {
+            return;
+        }
         this.getAllPlayers().forEach(this::removePlayer);
     }
     
@@ -110,7 +119,8 @@ public class TempTeam
         list.add(getPlayer1());
         list.add(getPlayer2());
         list.add(getPlayer3());
-        list.removeIf(Objects::isNull);
+        while (list.remove(null)) {
+        }
         return list;
     }
     
@@ -120,7 +130,8 @@ public class TempTeam
         list.add(getPlayer2());
         list.add(getPlayer3());
         if (!nullValues) {
-            list.removeIf(Objects::isNull);
+            while (list.remove(null)) {
+            }
         }
         return list;
     }
@@ -130,15 +141,15 @@ public class TempTeam
     }
     
     public Player getPlayer1() {
-        return this.player1 == null ? null : ProBending.plugin.getServer().getPlayer(this.player1);
+        return this.player1;
     }
     
     public Player getPlayer2() {
-        return this.player2 == null ? null : ProBending.plugin.getServer().getPlayer(this.player2);
+        return this.player2;
     }
     
     public Player getPlayer3() {
-        return this.player3 == null ? null : ProBending.plugin.getServer().getPlayer(this.player3);
+        return this.player3;
     }
 }
     
