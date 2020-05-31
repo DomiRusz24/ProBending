@@ -1,5 +1,7 @@
 package me.domirusz24.pk.probending.probending.arena;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
 import com.projectkorra.projectkorra.*;
 import java.util.*;
@@ -11,12 +13,12 @@ public class Team
     private PBTeamPlayer player2;
     private PBTeamPlayer player3;
     private TeamTag teamTag;
-    public boolean claimingStage;
+    private Arena arena;
     private int points;
     
-    public Team(final Player player1, final Player player2, final Player player3, final TeamTag tag) {
-        this.claimingStage = false;
+    public Team(final Player player1, final Player player2, final Player player3, final TeamTag tag, Arena arena) {
         this.points = 0;
+        this.arena = arena;
         this.player1 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player1), "WATER", this);
         this.player2 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player2), "WATER", this);
         this.player3 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player3), "WATER", this);
@@ -31,7 +33,11 @@ public class Team
         }
         return null;
     }
-    
+
+    public Arena getArena() {
+        return arena;
+    }
+
     public int getPBPlayerNumber(final PBTeamPlayer pbTeamPlayer) {
         int i = 0;
         for (final PBTeamPlayer teamPlayer : this.getPBPlayers()) {
@@ -58,6 +64,31 @@ public class Team
                 return null;
             }
         }
+    }
+
+    public boolean checkWipeOut() {
+        boolean bool = true;
+        for (PBTeamPlayer player : this.getPBPlayers(true)) {
+            if (player != null) {
+                if (!player.isKilled()) {
+                    bool = false;
+                }
+            }
+        }
+        return bool;
+    }
+
+    public String getPolishName() {
+        return this.getTeamTag() == TeamTag.BLUE ? "niebieska" : "czerwona";
+
+    }
+
+    public ChatColor getColor() {
+        return this.getTeamTag() == TeamTag.BLUE ? ChatColor.BLUE : ChatColor.RED;
+    }
+
+    public TeamTag getEnemyTeamTag() {
+        return this.getTeamTag() == TeamTag.BLUE ? TeamTag.RED : TeamTag.BLUE;
     }
     
     public PBTeamPlayer getPlayer1() {
@@ -86,19 +117,19 @@ public class Team
     
     public ArrayList<Player> getPlayers() {
         final ArrayList<Player> i = new ArrayList<Player>();
-        i.add(this.player1.getPlayer());
-        i.add(this.player2.getPlayer());
-        i.add(this.player3.getPlayer());
+        i.add(this.player1 == null ? null : this.player1.getPlayer());
+        i.add(this.player2 == null ? null : this.player2.getPlayer());
+        i.add(this.player3 == null ? null : this.player3.getPlayer());
         while (i.remove(null)) {
         }
         return i;
     }
     
     public ArrayList<Player> getPlayers(final boolean nullValues) {
-        final ArrayList<Player> i = new ArrayList<Player>();
-        i.add(this.player1.getPlayer());
-        i.add(this.player2.getPlayer());
-        i.add(this.player3.getPlayer());
+        final ArrayList<Player> i = new ArrayList<>();
+        i.add(this.player1 == null ? null : this.player1.getPlayer());
+        i.add(this.player2 == null ? null : this.player2.getPlayer());
+        i.add(this.player3 == null ? null : this.player3.getPlayer());
         if (!nullValues) {
             while (i.remove(null)) {
             }
@@ -111,13 +142,14 @@ public class Team
     }
     
     public ArrayList<PBTeamPlayer> getPBPlayers(final boolean nullValues) {
-        final ArrayList<PBTeamPlayer> i = new ArrayList<PBTeamPlayer>();
+        final ArrayList<PBTeamPlayer> i = new ArrayList<>();
         i.add(this.player1.getPlayer() == null ? null : this.player1);
         i.add(this.player2.getPlayer() == null ? null : this.player2);
         i.add(this.player3.getPlayer() == null ? null : this.player3);
         if (!nullValues) {
             while (i.remove(null)) {
             }
+            i.removeIf(e -> e.getPlayer() == null);
         }
         return i;
     }
@@ -129,6 +161,7 @@ public class Team
         i.add(this.player3.getPlayer() == null ? null : this.player3);
         while (i.remove(null)) {
         }
+        i.removeIf(e -> e.getPlayer() == null);
         return i;
     }
 }

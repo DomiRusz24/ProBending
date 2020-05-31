@@ -1,5 +1,6 @@
 package me.domirusz24.pk.probending.probending.arena.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
 import me.domirusz24.pk.probending.probending.arena.*;
@@ -17,23 +18,32 @@ public class PBCCompleter implements TabCompleter
                 }
             }
             if (args.length == 2) {
-                complete.add("stop");
-                complete.add("add");
-                complete.add("remove");
-                complete.add("start");
-                complete.add("forcestart");
-                complete.add("resetTempTeams");
+                if (sender.hasPermission("probending.arena.modify") || sender.isOp()) {
+                    complete.add("add");
+                    complete.add("stop");
+                    complete.add("remove");
+                    complete.add("start");
+                    complete.add("teleport");
+                    complete.add("forcestart");
+                    complete.add("resetTempTeams");
+                    complete.add("forceNextRound");
+                    complete.add("forceTieBreaker");
+                }
             }
             if (args.length == 3) {
-                for (final Player player : ProBending.plugin.getServer().getOnlinePlayers()) {
-                    if (!Arena.playersPlaying.contains(player)) {
-                        complete.add(player.getName());
+                if (sender.hasPermission("probending.arena.modify") || sender.isOp()) {
+                    for (final Player player : ProBending.plugin.getServer().getOnlinePlayers()) {
+                        if (!Arena.playersPlaying.contains(player)) {
+                            complete.add(player.getName());
+                        }
                     }
                 }
             }
             if (args.length == 4) {
-                complete.add("blue");
-                complete.add("red");
+                if (sender.hasPermission("probending.arena.modify") || sender.isOp()) {
+                    complete.add("blue");
+                    complete.add("red");
+                }
             }
             return complete;
         }

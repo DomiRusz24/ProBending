@@ -4,30 +4,32 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class ConfigMethods {
 
     public static void saveLocation(String path, Location location) throws IOException {
-        Config.reload();
-        Config.get().set(path + ".x", Math.floor(location.getX()));
-        Config.get().set(path + ".y", Math.floor(location.getY()));
-        Config.get().set(path + ".z",Math.floor(location.getZ()));
-        Config.get().set(path + ".yaw", location.getYaw());
-        Config.get().set(path + ".pitch", location.getPitch());
-        Config.get().set(path + ".world", location.getWorld().getName());
-        Config.save();
-        Config.reload();
+        CustomConfig.reload();
+        CustomConfig.get().set(path + ".x", Math.floor(location.getX()));
+        CustomConfig.get().set(path + ".y", Math.floor(location.getY()));
+        CustomConfig.get().set(path + ".z",Math.floor(location.getZ()));
+        CustomConfig.get().set(path + ".yaw", location.getYaw());
+        CustomConfig.get().set(path + ".pitch", location.getPitch());
+        CustomConfig.get().set(path + ".world", location.getWorld().getName());
+        CustomConfig.save();
+        CustomConfig.reload();
     }
 
     public static Location getLocation(String path) {
-        Config.reload();
-        double x = Config.get().getInt(path + ".x");
-        double y = Config.get().getInt(path + ".y");
-        double z = Config.get().getInt(path + ".z");
-        double yaw = Config.get().getDouble(path + ".yaw");
-        double pitch = Config.get().getDouble(path + ".pitch");
-        String w = Config.get().getString(path + ".world");
+        CustomConfig.reload();
+        double x = CustomConfig.get().getInt(path + ".x");
+        double y = CustomConfig.get().getInt(path + ".y");
+        double z = CustomConfig.get().getInt(path + ".z");
+        double yaw = CustomConfig.get().getDouble(path + ".yaw");
+        double pitch = CustomConfig.get().getDouble(path + ".pitch");
+        String w = CustomConfig.get().getString(path + ".world");
+        if (w == null) {
+            return null;
+        }
         World world = ProBending.plugin.getServer().getWorld(w);
         return new Location(world, x + 0.5, y, z + 0.5, (float) yaw, (float) pitch);
     }

@@ -9,9 +9,14 @@ public class ArenaCreateCompleter implements TabCompleter
 {
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (sender instanceof Player && command.getName().equalsIgnoreCase("arena")) {
-            final List<String> complete = new ArrayList<String>();
+            final List<String> complete = new ArrayList<>();
+            if (!sender.hasPermission("probending.arena.config") || sender.isOp()) {
+                return complete;
+            }
             if (args.length == 1) {
-                complete.add("create");
+                if (sender.hasPermission("probending.arena.create") || sender.isOp()) {
+                    complete.add("create");
+                }
                 complete.add("setspawn");
                 complete.add("teleportspawn");
                 for (final Arena arena : Arena.Arenas) {

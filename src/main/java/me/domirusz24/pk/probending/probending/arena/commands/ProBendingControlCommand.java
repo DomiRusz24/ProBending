@@ -20,6 +20,16 @@ public class ProBendingControlCommand implements CommandExecutor
                     return true;
                 }
                 if (args.length == 1) {
+                    if (args[0].equalsIgnoreCase("stopspectate")) {
+                        if (Arena.getPlayersSpectating().containsKey(player)) {
+                            Arena.getPlayersSpectating().get(player).removeSpectator(player);
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales usuniety z spektatora!");
+                            return true;
+                        } else {
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie jestes w trybie spektatora!");
+                            return true;
+                        }
+                    }
                     Arena arena;
                     try {
                         arena = Arena.getArenaFromID(args[0]);
@@ -74,27 +84,47 @@ public class ProBendingControlCommand implements CommandExecutor
                         info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
                         info.forEach(player::sendMessage);
                         return true;
+                    } else {
+
+                        info.add(ChatColor.BOLD + "" + ChatColor.ITALIC + "RUNDA: " + arena.getRoundNumber());
+                        info.add(ChatColor.BOLD + "" + ChatColor.ITALIC + "W TIEBREAKER: " + (arena.isInTieBreaker() ? "TAK" : "NIE"));
+                        info.add(ChatColor.BOLD + "" + ChatColor.ITALIC + "DRUZYNY: ");
+                        info.add("");
+                        info.add(ChatColor.BOLD + "" + ChatColor.RED + "CZERWONA: ");
+                        int i = 0;
+                        for (final PBTeamPlayer teamPlayer : arena.getTeamRed().getPBPlayers(true)) {
+                            ++i;
+                            final String playerstatus = (teamPlayer == null || teamPlayer.getPlayer() == null) ? "NIE DODANY" : teamPlayer.getPlayer().getName();
+                            if (teamPlayer == null) {
+                                info.add("Gracz " + i + ": " + playerstatus);
+                            } else {
+                                String playerstatuslife = teamPlayer.isKilled() ? " (ODPADL)" : " (NIE ODPADL)";
+                                String inTieBreaker = teamPlayer.isInTieBreaker() ? "(W TIEBREAKER)" : "";
+                                info.add("Gracz " + i + ": " + playerstatus + playerstatuslife + " " + inTieBreaker);
+                            }
+                        }
+                        info.add("Punkty: " + arena.getTeamRed().getPoints());
+
+
+
+                        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "NIEBIESKA: ");
+                        int y = 0;
+                        for (final PBTeamPlayer teamPlayer : arena.getTeamBlue().getPBPlayers(true)) {
+                            ++y;
+                            final String playerstatus2 = (teamPlayer == null || teamPlayer.getPlayer() == null) ? "NIE DODANY" : teamPlayer.getPlayer().getName();
+                            if (teamPlayer == null) {
+                                info.add("Gracz " + y + ": " + playerstatus2);
+                            } else {
+                                String playerstatus4 = teamPlayer.isKilled() ? " (ODPADL)" : " (NIE ODPADL)";
+                                info.add("Gracz " + y + ": " + playerstatus2 + playerstatus4);
+                            }
+                        }
+                        info.add("Punkty: " + arena.getTeamBlue().getPoints());
+                        info.forEach(player::sendMessage);
+                        return true;
                     }
-                    info.add(ChatColor.BOLD + "" + ChatColor.ITALIC + "DRUZYNY: ");
-                    info.add("");
-                    info.add(ChatColor.BOLD + "" + ChatColor.RED + "CZERWONA: ");
-                    int i = 0;
-                    for (final PBTeamPlayer teamPlayer : arena.getTeamRed().getPBPlayers(true)) {
-                        ++i;
-                        final String playerstatus = (teamPlayer == null) ? "NIE DODANY" : teamPlayer.getPlayer().getName();
-                        info.add("Gracz " + i + ": " + playerstatus);
-                    }
-                    info.add("Punkty: " + arena.getTeamRed().getPoints());
-                    info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "NIEBIESKA: ");
-                    int y = 0;
-                    for (final PBTeamPlayer teamPlayer2 : arena.getTeamBlue().getPBPlayers(true)) {
-                        ++y;
-                        final String playerstatus2 = (teamPlayer2 == null) ? "NIE DODANY" : teamPlayer2.getPlayer().getName();
-                        info.add("Gracz " + y + ": " + playerstatus2);
-                    }
-                    info.add("Punkty: " + arena.getTeamBlue().getPoints());
                 }
-                if (!player.hasPermission("probending.arena.modify")) {
+                if (!player.hasPermission("probending.arena.modify") || sender.isOp()) {
                     player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
                     return true;
                 }
@@ -121,6 +151,36 @@ public class ProBendingControlCommand implements CommandExecutor
                             arena.startGameWithFeedBack(player);
                             return true;
                         }
+                        case "spectate": {
+                            if (Arena.playersPlaying.contains(player)) {
+
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie mozesz spektatowac w trakcie gry!");
+                                return true;
+
+                            } else if (!arena.isInGame()) {
+
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie zaczela!");
+                                return true;
+
+                            } else {
+                                arena.addSpectator(player, false);
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Spektetujesz gre w arenie " + arena.getID() + "!");
+                                return true;
+
+                            }
+                        }
+                        case "teleport": {
+                            if (arena.getCenter() == null) {
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Jakims cudem srodek nie istnieje...");
+                                return true;
+
+                            } else {
+                                Location t = arena.getCenter();
+                                t.setY(t.getY() + 6);
+                                player.teleport(t);
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales przeteleportowany na srodek areny " + arena.getID() + "!");
+                            }
+                        }
                         case "forcestart": {
                             if (arena.isInGame()) {
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
@@ -145,6 +205,24 @@ public class ProBendingControlCommand implements CommandExecutor
                                 arena.getTempTeamByTag(TeamTag.BLUE).removeAllPlayers();
                                 arena.getTempTeamByTag(TeamTag.RED).removeAllPlayers();
                                 player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto wszystkich playerow z oczekujacych druzyn!");
+                            }
+                            return true;
+                        }
+                        case "forceNextRound": {
+                            if (arena.isInGame()) {
+                                arena.nextMidRound();
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zaczeto runde " + arena.getRoundNumber() + "!");
+                            } else {
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
+                            }
+                            return true;
+                        }
+                        case "forceTieBreaker": {
+                            if (arena.isInGame()) {
+                                arena.nextMidRound();
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zaczeto TieBreaker!");
+                            } else {
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
                             }
                             return true;
                         }
@@ -221,7 +299,7 @@ public class ProBendingControlCommand implements CommandExecutor
                             }
                             case "remove": {
                                 if (arena.getTempTeamByTag(joinTeam).getAllPlayers().contains(target)) {
-                                    arena.getTempTeamByTag(joinTeam).removePlayer(player);
+                                    arena.getTempTeamByTag(joinTeam).removePlayer(target);
                                     player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto gracza " + target.getName() + " z druzyny!");
                                     return true;
                                 }

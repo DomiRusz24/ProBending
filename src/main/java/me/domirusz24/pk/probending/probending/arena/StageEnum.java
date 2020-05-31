@@ -8,16 +8,16 @@ public enum StageEnum
     ThirdRED(2, TeamTag.RED, (byte) 7),
     SecondRED(3, TeamTag.RED, (byte) 2),
     FirstRED(4, TeamTag.RED, (byte) 13),
-    FirstBLUE(5, TeamTag.BLUE, (byte) 4),
-    SecondBLUE(6, TeamTag.BLUE, (byte) 1),
-    ThirdBLUE(7, TeamTag.BLUE, (byte) 10),
-    BackBLUE(8, TeamTag.BLUE, (byte) 0),
+    TieBreakerRED(5, TeamTag.RED, (byte) 9),
+    TieBreakerBLUE(6, TeamTag.BLUE, (byte) 5),
+    FirstBLUE(7, TeamTag.BLUE, (byte) 4),
+    SecondBLUE(8, TeamTag.BLUE, (byte) 1),
+    ThirdBLUE(9, TeamTag.BLUE, (byte) 10),
+    BackBLUE(10, TeamTag.BLUE, (byte) 0),
 
 
     WholeArena(11, null, (byte) 12),
-    TieBreakerRED(12, TeamTag.RED, (byte) 9),
-    TieBreakerBLUE(13, TeamTag.BLUE, (byte) 5),
-    Line(14, null, (byte) 15);
+    Line(12, null, (byte) 15);
     
     private final int ID;
     private final byte data;
@@ -27,12 +27,27 @@ public enum StageEnum
         this.ID = ID;
         this.data = data;
         this.teamTag = teamTag;
+        // ZROB 1, 2, 3, 4 BLUE RED
     }
 
 
     
     public int getID() {
         return this.ID;
+    }
+
+    public int getID(TeamTag team) {
+        if (this == Line || this == WholeArena) {
+            return this.getID();
+        }
+        // 11 - (((10 - 1) % 10) + 1)
+        if (team == TeamTag.RED) {
+            return this.getID();
+        } else if (team == TeamTag.BLUE) {
+            return 11 - (((this.getID() - 1) % 10) + 1);
+        } else {
+            return this.getID();
+        }
     }
     
     public int getData() {
@@ -72,6 +87,22 @@ public enum StageEnum
         return enums;
     }
 
+
+    public static int convertID(int ID, TeamTag team) {
+        // 11 - (((10 - 1) % 10) + 1)
+        if (team == TeamTag.RED) {
+            return ID;
+        } else if (team == TeamTag.BLUE) {
+            return 11 - (((ID - 1) % 10) + 1);
+        } else {
+            return ID;
+        }
+    }
+
+    public static int convertID(int ID) {
+        return 11 - (((ID - 1) % 10) + 1);
+    }
+
     @Override
     public String toString() {
         switch (this) {
@@ -88,6 +119,24 @@ public enum StageEnum
             case ThirdRED: return "4RED";
             case BackRED:return "5RED";
             default: return null;
+        }
+    }
+
+    public String polishName() {
+        switch (this) {
+            case BackRED: return "Tyl";
+            case ThirdRED: return "Strefa 1";
+            case SecondRED: return "Strefa 2";
+            case FirstRED: return "Strefa 3";
+            case TieBreakerRED: return "Strefa 4";
+            case TieBreakerBLUE: return "Strefa 5";
+            case FirstBLUE: return "Strefa 6";
+            case SecondBLUE: return "Strefa 7";
+            case ThirdBLUE: return "Strefa 8";
+            case BackBLUE: return "Tyl druzyny przeciwnej";
+            case WholeArena: return "Bok areny";
+            case Line: return "Lina";
+            default: return "null";
         }
     }
 
