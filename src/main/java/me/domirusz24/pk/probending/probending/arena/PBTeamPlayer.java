@@ -74,6 +74,8 @@ public class PBTeamPlayer
         int add = (!isInTieBreaker() && getStage() == 7) ? -3 : -1;
         this.stage = StageEnum.convertID(getStage() + add, team.getTeamTag());
         this.player.sendTitle("---", ChatColor.BOLD + "" + ChatColor.RED + "Zostales cofniety z strefy " + (this.getStage() - 1) + " na strefe " + this.getStage(), 2, 60, 2);
+        getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, getPlayer().getLocation().clone().add(0, 4, 0), 30, 0.1, 0.1, 0.1);
+        getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, getPlayer().getLocation().clone().add(0, 5, 0), 30, 0.1, 0.1, 0.1);
     }
 
     public void raiseStage() {
@@ -86,7 +88,9 @@ public class PBTeamPlayer
         loc.setPitch(getPlayer().getLocation().getPitch());
         loc.setYaw(getPlayer().getLocation().getYaw());
         getPlayer().teleport(loc);
-        this.player.sendTitle("---", ChatColor.BOLD + "" + ChatColor.GREEN + "Zdobyles strefe " + getStage() + "!", 2, 60, 2);
+        this.player.sendTitle("", ChatColor.BOLD + "" + ChatColor.GREEN + "Zdobyles strefe " + getStage() + "!", 2, 40, 2);
+        getPlayer().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, getPlayer().getLocation().clone().add(0, 4, 0), 30, 0.1, 0.1, 0.1);
+        getPlayer().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, getPlayer().getLocation().clone().add(0, 5, 0), 30, 0.1, 0.1, 0.1);
     }
 
     public void debug() {

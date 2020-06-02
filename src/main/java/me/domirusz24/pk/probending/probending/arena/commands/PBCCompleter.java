@@ -13,6 +13,7 @@ public class PBCCompleter implements TabCompleter
         if (sender instanceof Player && command.getName().equalsIgnoreCase("pbc")) {
             final List<String> complete = new ArrayList<String>();
             if (args.length == 1) {
+                complete.add("stopspectate");
                 for (final Arena arena : Arena.Arenas) {
                     complete.add(String.valueOf(arena.getID()));
                 }
@@ -29,6 +30,7 @@ public class PBCCompleter implements TabCompleter
                     complete.add("forceNextRound");
                     complete.add("forceTieBreaker");
                 }
+                complete.add("spectate");
             }
             if (args.length == 3) {
                 if (sender.hasPermission("probending.arena.modify") || sender.isOp()) {

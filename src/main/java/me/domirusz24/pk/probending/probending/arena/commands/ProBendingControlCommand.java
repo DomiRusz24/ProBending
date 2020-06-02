@@ -23,10 +23,10 @@ public class ProBendingControlCommand implements CommandExecutor
                     if (args[0].equalsIgnoreCase("stopspectate")) {
                         if (Arena.getPlayersSpectating().containsKey(player)) {
                             Arena.getPlayersSpectating().get(player).removeSpectator(player);
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales usuniety z spektatora!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przestales spektatowac gre!");
                             return true;
                         } else {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie jestes w trybie spektatora!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Musisz byc spektatorem aby wyjsc!");
                             return true;
                         }
                     }
@@ -119,12 +119,20 @@ public class ProBendingControlCommand implements CommandExecutor
                                 info.add("Gracz " + y + ": " + playerstatus2 + playerstatus4);
                             }
                         }
+
+                        info.add(ChatColor.BOLD + "SPEKTATORZY: ");
+                        for (Player p : arena.getSpectators()) {
+                            info.add(p.getName());
+                        }
+
+
+
                         info.add("Punkty: " + arena.getTeamBlue().getPoints());
                         info.forEach(player::sendMessage);
                         return true;
                     }
                 }
-                if (!player.hasPermission("probending.arena.modify") || sender.isOp()) {
+                if (!player.hasPermission("probending.arena.modify")) {
                     player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
                     return true;
                 }

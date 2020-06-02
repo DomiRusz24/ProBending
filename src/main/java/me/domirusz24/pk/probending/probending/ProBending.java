@@ -45,6 +45,7 @@ public final class ProBending extends JavaPlugin
         getConfig().addDefault("debug", true);
         getConfig().options().copyDefaults(true);
         saveConfig();
+
     }
     
     public void onDisable() {

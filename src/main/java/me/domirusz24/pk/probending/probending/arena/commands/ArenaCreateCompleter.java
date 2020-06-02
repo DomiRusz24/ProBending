@@ -27,6 +27,7 @@ public class ArenaCreateCompleter implements TabCompleter
                 for (final StageEnum e : StageEnum.values()) {
                     complete.add(e.toString());
                 }
+                complete.add("setTBPaste");
             }else
             if (args.length == 3) {
                 complete.add("player1");

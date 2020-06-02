@@ -67,12 +67,14 @@ public class Team
     }
 
     public boolean checkWipeOut() {
+        if (getPBPlayers().isEmpty()) {
+            return true;
+        }
         boolean bool = true;
-        for (PBTeamPlayer player : this.getPBPlayers(true)) {
-            if (player != null) {
-                if (!player.isKilled()) {
-                    bool = false;
-                }
+        for (PBTeamPlayer player : this.getPBPlayers()) {
+            if (!player.isKilled()) {
+                bool = false;
+                break;
             }
         }
         return bool;

@@ -18,7 +18,7 @@ public class AreanaCreateCommand implements CommandExecutor
                     return true;
                 }
                 if (args.length == 0) {
-                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj ID areny lub create / setspawn!");
+                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Please type in an arena ID or create / setspawn!");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("create")) {
@@ -31,7 +31,7 @@ public class AreanaCreateCommand implements CommandExecutor
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Stworzono arene o ID: " + Arena.Arenas.size());
+                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Created an arena of the ID: " + Arena.Arenas.size());
                     return true;
                 } else {
                     if (args[0].equalsIgnoreCase("setspawn")) {
@@ -40,49 +40,49 @@ public class AreanaCreateCommand implements CommandExecutor
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono spawn!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Set spawn!");
                         return true;
                     } else if (args[0].equalsIgnoreCase("teleportspawn")) {
                         if (Arena.spawn() == null) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Spawn nie istnieje!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Spawn is not set!");
                             return true;
                         } else {
                             player.teleport(Arena.spawn());
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales przeteleportowany na spawn!");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "You have been teleported!");
                             return true;
                         }
                     }
                     if (args.length == 1) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj ID strefy!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Please type in an Arena ID!");
                         return true;
                     }
                     if (args.length == 2) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj typ teleporta. (player1, player2, player3, center)");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Please type in a teleport type. (player1, player2, player3, center)");
                         return true;
                     }
                     if (args.length > 4) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Za duzo argumentow!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Too much arguments!");
                         return true;
                     }
                     Arena arena;
                     try {
                         arena = Arena.getArenaFromID(args[0]);
                     } catch (NumberFormatException e) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "ID areny musi byc liczba!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "ID must be a number!");
                         return true;
                     }
                     if (arena == null) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Takie ID areny nie istnieje!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "That arena ID doesn't exist!");
                         return true;
                     }
                     final StageEnum stageEnum = StageEnum.getFromConfigName(args[1]);
                     if (stageEnum == null) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Taka nazwa strefy nie istnieje!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "That stage doesn't exist!");
                         return true;
                     }
                     final Stage stage = arena.getStage(stageEnum.getID());
                     if (stage == null) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Arena nie wytworzyla jeszcze tej areny!");
+                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Arena didnt create that stage yet!");
                         return true;
                     }
                     System.out.println(stageEnum.toString());
@@ -95,7 +95,7 @@ public class AreanaCreateCommand implements CommandExecutor
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 1 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Set Player 1 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "player2": {
@@ -104,7 +104,7 @@ public class AreanaCreateCommand implements CommandExecutor
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 2 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Set Player 2 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "player3": {
@@ -113,7 +113,7 @@ public class AreanaCreateCommand implements CommandExecutor
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Playera 3 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Set Playera 3 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "center": {
@@ -122,54 +122,54 @@ public class AreanaCreateCommand implements CommandExecutor
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Ustawiono teleport Srodka w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Set center in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             default: {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprwany typ teleporta.");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Invalid teleport type.");
                                 return true;
                             }
                         }
                     } else {
                         if (!args[3].equalsIgnoreCase("teleport")) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Miales na mysli teleport?");
+                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You mean teleport?");
                             return true;
                         }
                         switch (s) {
                             case "player1": {
                                 if (stage.getPlayer1Teleport() == null) {
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player1 w " + stage.getStage().toString() + " nie istnieje!");
+                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player1 in " + stage.getStage().toString() + " doesnt exist!");
                                 }
                                 player.teleport(stage.getPlayer1Teleport());
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przeteleportowano cie do player1 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Teleported to player1 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "player2": {
                                 if (stage.getPlayer2Teleport() == null) {
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player2 w " + stage.getStage().toString() + " nie istnieje!");
+                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player2 in " + stage.getStage().toString() + " doesnt exist!");
                                 }
                                 player.teleport(stage.getPlayer2Teleport());
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przeteleportowano cie do player2 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Teleported to player2 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "player3": {
                                 if (stage.getPlayer3Teleport() == null) {
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player3 w " + stage.getStage().toString() + " nie istnieje!");
+                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport player3 in " + stage.getStage().toString() + " doesnt exist!");
                                 }
                                 player.teleport(stage.getPlayer3Teleport());
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przeteleportowano cie do player3 w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Teleported to player3 in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             case "center": {
                                 if (stage.getCenter() == null) {
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport center w " + stage.getStage().toString() + " nie istnieje!");
+                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Teleport center in " + stage.getStage().toString() + "  doesnt exist!");
                                 }
                                 player.teleport(stage.getCenter());
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przeteleportowano cie do center w " + stage.getStage().toString() + "!");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Teleported to center in " + stage.getStage().toString() + "!");
                                 return true;
                             }
                             default: {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprwany typ teleporta.");
+                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Invalid teleport type.");
                                 return true;
                             }
                         }
@@ -177,7 +177,7 @@ public class AreanaCreateCommand implements CommandExecutor
                 }
             }
         } else {
-            System.out.println("Musisz byc playerem aby wykonac ta komende!");
+            System.out.println("You must be a player to use this command!");
         }
         return true;
     }

@@ -1,6 +1,7 @@
 name: ProBending
 version: 1.12.2
 main: me.domirusz24.pk.probending.probending.ProBending
+depends: [WorldEdit]
 commands:
   arena:
     description: Ustawienia areny
