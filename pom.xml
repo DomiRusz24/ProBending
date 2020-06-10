@@ -85,5 +85,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/worldedit-bukkit-6.1.9.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>net.shadowxcraft.rollbackcore</groupId>
+            <artifactId>rollbackcore</artifactId>
+            <version>2.4.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/RollbackCore-2.4.2 (for 1.12.2 or older).jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

@@ -7,12 +7,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 
-public class CustomConfig {
+public class ArenaTBStagesConfig {
     private static File file;
     private static FileConfiguration config;
 
     public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("ProBending").getDataFolder(), "locations/locations.yml");
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("ProBending").getDataFolder(), "locations/TBStages.yml");
 
         if (!file.exists()){
             try {
