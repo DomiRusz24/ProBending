@@ -14,6 +14,7 @@ public class PBCCompleter implements TabCompleter
             final List<String> complete = new ArrayList<String>();
             if (args.length == 1) {
                 complete.add("stopspectate");
+                complete.add("rules");
                 for (final Arena arena : Arena.Arenas) {
                     complete.add(String.valueOf(arena.getID()));
                 }

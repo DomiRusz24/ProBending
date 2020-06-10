@@ -3,11 +3,7 @@ package me.domirusz24.pk.probending.probending.arena;
 import me.domirusz24.pk.probending.probending.ConfigMethods;
 import me.domirusz24.pk.probending.probending.ProBending;
 import me.domirusz24.pk.probending.probending.arena.commands.ArenaCreateCommand;
-import me.domirusz24.pk.probending.probending.arena.commands.ArenaCreateCompleter;
 import me.domirusz24.pk.probending.probending.arena.temp.TempTeam;
-import net.shadowxcraft.rollbackcore.Config;
-import net.shadowxcraft.rollbackcore.Main;
-import net.shadowxcraft.rollbackcore.Paste;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -15,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +27,36 @@ public class Arena
         ConfigMethods.saveLocation("spawn", location);
     }
 
+    public static ArrayList<String> getArenaRules() {
+        ArrayList<String> info = new ArrayList<>();
+        info.add(ChatColor.BOLD + "" + ChatColor.GREEN + "ZASADY GRY:");
+        info.add(ChatColor.RED + " - Arena ma 6 stref, jak sie cofniesz o strefe to tam zostajesz, i nie mozesz przejsc o strefe do przodu.");
+        info.add(ChatColor.RED + " - Jezeli wypadniesz z areny (z tylu) lub kiedy zginiesz to zostajesz dyskwalifikowany");
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "JAK WYGRAC GRE:");
+        info.add(ChatColor.DARK_AQUA + " - Zabij wszystkich przecinikow lub");
+        info.add(ChatColor.DARK_AQUA + " - Wygraj " + winningRound + " rund lub");
+        info.add(ChatColor.DARK_AQUA + " - W przypadku remisu, wygraj TieBreaker.");
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "JAK WYGRAC RUNDE:");
+        info.add(ChatColor.YELLOW + " - Miej wiecej osob nie dyskwalifikowanych lub");
+        info.add(ChatColor.YELLOW + " - jezeli jest po tyle samo osob, miej wiecej stref.");
+        info.add(ChatColor.YELLOW + " - Runda trwa " + roundTime / (20 * 60)  + " minut.");
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "TIEBREAKER:");
+        info.add(ChatColor.AQUA + " - TieBreaker jest to walka 1 na 1 ktora odbywa sie na srodkowej strefie (kolo).");
+        info.add(ChatColor.AQUA + " - Zeby wygrac musisz zabic, lub pchnac przeciwnika poza kolo.");
+        info.add(ChatColor.AQUA + " - TieBreaker trwa " + tieBreakerRoundTime / (20 * 60)  + " minut, jezeli nikt nie wygra w ciagu tego czasu, gra konczy sie remisem.");
+        return info;
+    }
+
 
     public static ArrayList<Arena> Arenas = new ArrayList<>();
     public static ArrayList<Player> playersPlaying = new ArrayList<>();
     private static HashMap<Player, Arena> playersSpectating = new HashMap<>();
     private ArrayList<Player> spectators = new ArrayList<>();
+    private static final int tickUpdate =ProBending.plugin.getConfig().getInt("arena.tickUpdate");
+    private static final int winningRound= ProBending.plugin.getConfig().getInt("arena.winningRound");
+    private static final int tieBreakerRoundTime= ProBending.plugin.getConfig().getInt("arena.tieBreakerRound");
+    private static final int roundTime= ProBending.plugin.getConfig().getInt("arena.roundTime");
+    private static final int TBraisingStages = ProBending.plugin.getConfig().getInt("TB.raisingStages");
 
     public TempTeam blueTempTeam;
     public TempTeam redTempTeam;
@@ -47,11 +67,6 @@ public class Arena
     private Team TeamBlue = null;
     private Team TeamRed = null;
     private String ID;
-    private final int tickUpdate;
-    private final int winningRound;
-    private final int tieBreakerRoundTime;
-    private final int roundTime;
-    private final int TBraisingStages;
     private int roundNumber;
     private boolean inTieBreaker;
     private PBTeamPlayer tieBreakerPlayerBlue;
@@ -71,11 +86,6 @@ public class Arena
     }
 
     public Arena(final Location location, String ID) throws IOException {
-        tickUpdate = ProBending.plugin.getConfig().getInt("arena.tickUpdate");
-        winningRound = ProBending.plugin.getConfig().getInt("arena.winningRound");
-        tieBreakerRoundTime = ProBending.plugin.getConfig().getInt("arena.tieBreakerRound");
-        roundTime = ProBending.plugin.getConfig().getInt("arena.roundTime");
-        TBraisingStages = ProBending.plugin.getConfig().getInt("TB.raisingStages");
         this.inGame = false;
         this.stages = new HashMap<>();
         this.roundNumber = 0;
@@ -88,11 +98,6 @@ public class Arena
     }
 
     public Arena(final Location location, String ID, boolean firsttime) throws IOException {
-        tickUpdate = ProBending.plugin.getConfig().getInt("arena.tickUpdate");
-        winningRound = ProBending.plugin.getConfig().getInt("arena.winningRound");
-        tieBreakerRoundTime = ProBending.plugin.getConfig().getInt("arena.tieBreakerRound");
-        roundTime = ProBending.plugin.getConfig().getInt("arena.roundTime");
-        TBraisingStages = ProBending.plugin.getConfig().getInt("TB.raisingStages");
         this.inGame = false;
         this.stages = new HashMap<>();
         this.roundNumber = 0;
@@ -185,8 +190,10 @@ public class Arena
         this.inTieBreaker = false;
         roundNumber = 1;
         System.out.println("Rozpoczela sie gra! (Arena " + this.ID + ")");
+        ArrayList<String> rules = getArenaRules();
         for (PBTeamPlayer e : this.getAllPBPlayers()) {
             Arena.playersPlaying.add(e.getPlayer());
+            rules.forEach(e.getPlayer()::sendMessage);
         }
         this.nextRound();
     }
@@ -531,7 +538,7 @@ public class Arena
                     broadcastTitle(ChatColor.BOLD + "" + NumberChatColor.getFromValue(i).getChatColor() + i, "", 0, 20, 0);
                     broadcastTitleSpectatorsOnly(ChatColor.BOLD + "" + NumberChatColor.getFromValue(i).getChatColor() + i, "", 0, 20, 0);
                     if (ArenaCreateCommand.paste(null, getID(), String.valueOf(11 - i))) {
-                        if ((11 - i) <= 4) {
+                        if ((11 - i) <= Arena.TBraisingStages) {
                             tieBreakerPlayerRed.getPlayer().teleport(tieBreakerPlayerRed.getPlayer().getLocation().clone().add(0, 1, 0));
                             tieBreakerPlayerBlue.getPlayer().teleport(tieBreakerPlayerBlue.getPlayer().getLocation().clone().add(0, 1, 0));
                         }

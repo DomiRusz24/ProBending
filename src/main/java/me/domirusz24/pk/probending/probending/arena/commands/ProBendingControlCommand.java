@@ -32,6 +32,9 @@ public class ProBendingControlCommand implements CommandExecutor
                             player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Musisz byc spektatorem aby wyjsc!");
                         }
                         return true;
+                    } else if (args[0].equalsIgnoreCase("rules")) {
+                        Arena.getArenaRules().forEach(player::sendMessage);
+                        return true;
                     }
                     Arena arena;
                     try {
@@ -287,6 +290,7 @@ public class ProBendingControlCommand implements CommandExecutor
         ChatColor c = ChatColor.GREEN;
         info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
         if (args.length == 1 || args[1].equalsIgnoreCase("1")) {
+            info.add(c + "/pbc rules - Wyswietla zasady gry");
             info.add(c + "/pbc (ID ARENY) - Wyswietla informacje o arenie.");
             info.add(c + "/pbc stopspectate - Zakoncza spektacje meczu.");
             info.add(c + "/pbc (ID ARENY) spectate - Zaczyna spektacje meczu.");

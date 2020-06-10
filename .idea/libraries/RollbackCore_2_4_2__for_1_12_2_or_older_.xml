@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="RollbackCore-2.4.2 (for 1.12.2 or older)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/RollbackCore-2.4.2 (for 1.12.2 or older).jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
