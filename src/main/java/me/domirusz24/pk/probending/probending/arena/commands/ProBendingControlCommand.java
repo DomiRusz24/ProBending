@@ -19,6 +19,10 @@ public class ProBendingControlCommand implements CommandExecutor
                     player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj ID areny!");
                     return true;
                 }
+                if (args[0].equalsIgnoreCase("help")) {
+                        displayHelp(player, args);
+                        return true;
+                }
                 if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("stopspectate")) {
                         if (Arena.getPlayersSpectating().containsKey(player)) {
@@ -275,6 +279,39 @@ public class ProBendingControlCommand implements CommandExecutor
             }
         }
         return true;
+    }
+
+
+    public void displayHelp(Player player, String[] args) {
+        ArrayList<String> info = new ArrayList<>();
+        ChatColor c = ChatColor.GREEN;
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
+        if (args.length == 1 || args[1].equalsIgnoreCase("1")) {
+            info.add(c + "/pbc (ID ARENY) - Wyswietla informacje o arenie.");
+            info.add(c + "/pbc stopspectate - Zakoncza spektacje meczu.");
+            info.add(c + "/pbc (ID ARENY) spectate - Zaczyna spektacje meczu.");
+            info.add(c + "/pbc (ID ARENY) add (GRACZ) (RED/BLUE) - Dodaje gracza do oczekujacej druzyny.");
+            info.add(c + "/pbc (ID ARENY) remove (GRACZ) (RED/BLUE) - Usuwa gracza z oczekujacej druzyny.");
+            info.add("");
+            info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 1 z 2)");
+
+        } else {
+            if (args[1].equalsIgnoreCase("2")) {
+                info.add(c + "/pbc (ID ARENY) start - Rozpoczyna gre");
+                info.add(c + "/pbc (ID ARENY) stop - Zakoncza gre");
+                info.add(c + "/pbc (ID ARENY) forcestart - Wymusza rozpoczenie gry");
+                info.add(c + "/pbc (ID ARENY) forcenextround - Wymusza nastepna runde");
+                info.add(c + "/pbc (ID ARENY) resettempteams - Usuwa wszystkich graczy z oczekujacych druzynyn.");
+                info.add(c + "/pbc (ID ARENY) forcetiebreaker - Wymusza tiebreaker (NIE STABILNE)");
+                info.add("");
+                info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 2 z 2)");
+            } else {
+                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawna strona!");
+                return;
+            }
+        }
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
+        info.forEach(player::sendMessage);
     }
 
 

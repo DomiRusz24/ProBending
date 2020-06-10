@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class ArenaCreateCommand implements CommandExecutor {
 
@@ -100,6 +101,10 @@ public class ArenaCreateCommand implements CommandExecutor {
 
                 if (!player.hasPermission("probending.arena.config")) {
                     player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji.");
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("help")) {
+                    displayHelp(player, args);
                     return true;
                 }
 
@@ -325,5 +330,35 @@ public class ArenaCreateCommand implements CommandExecutor {
             System.out.println("You must be a player to use this command!");
         }
         return true;
+    }
+
+    public void displayHelp(Player player, String[] args) {
+        ArrayList<String> info = new ArrayList<>();
+        ChatColor c = ChatColor.GREEN;
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
+        if (args.length == 1 || args[1].equalsIgnoreCase("1")) {
+            info.add(c + "/arena setspawn - Ustawia ogolny spawn");
+            info.add(c + "/arena teleportspawn - Teleportuje do ogolnego spawnu");
+            info.add(c + "/arena create - Tworzy nowa arene");
+            info.add(c + "/arena (ID ARENY) setrollback - Tworzy RollBack areny");
+            info.add(c + "/arena (ID ARENY) getrollback - Manualnie rollbackuje arene");
+            info.add("");
+            info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 1 z 2)");
+
+        } else {
+            if (args[1].equalsIgnoreCase("2")) {
+                info.add(c + "/arena (ID ARENY) settbstage (ETAP ANIMACJI) - Tworzy etap animacji TieBreakera z selekcja w WorldEdit. (0 = STAN POCZATKOWY)");
+                info.add(c + "/arena (ID ARENY) gettbstage (ETAP ANIMACJI) - Manulanie pokazuje animacje TieBreakera");
+                info.add(c + "/arena (ID ARENY) (STREFA) (TYP TELEPORTA) - Ustawia teleport dla podanego typu na podanej strefie.");
+                info.add(c + "/arena (ID ARENY) (STREFA) (TYP TELEPORTA) teleport - Teleportuje na podany typ teleporta na podanej strefie.");
+                info.add("");
+                info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 2 z 2)");
+            } else {
+                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawna strona!");
+                return;
+            }
+        }
+        info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
+        info.forEach(player::sendMessage);
     }
 }
