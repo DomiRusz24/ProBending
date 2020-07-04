@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.arena;
+package me.domirusz24.pk.probending.probending.arena.misc;
 
 import org.bukkit.ChatColor;
 

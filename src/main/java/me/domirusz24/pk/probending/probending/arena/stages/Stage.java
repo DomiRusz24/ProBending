@@ -1,7 +1,8 @@
-package me.domirusz24.pk.probending.probending.arena;
+package me.domirusz24.pk.probending.probending.arena.stages;
 
-import me.domirusz24.pk.probending.probending.ConfigMethods;
-import org.bukkit.*;
+import me.domirusz24.pk.probending.probending.arena.Arena;
+import me.domirusz24.pk.probending.probending.config.ConfigMethods;
+import org.bukkit.Location;
 
 import java.io.IOException;
 
@@ -62,6 +63,14 @@ public class Stage
     
     public void setPlayer3Teleport(final Location player3Teleport) throws IOException {
         ConfigMethods.saveLocation(configEntry + ".player3", player3Teleport);
+    }
+
+    public Location getTeleport(StageTeleports teleport) {
+        return ConfigMethods.getLocation(configEntry + "." + teleport.getName());
+    }
+
+    public void setTeleport(StageTeleports teleport, Location location) throws IOException {
+        ConfigMethods.saveLocation(configEntry + "." + teleport.getName(), location);
     }
     
     public StageEnum getStage() {

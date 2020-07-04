@@ -1,9 +1,17 @@
 package me.domirusz24.pk.probending.probending.arena.commands;
 
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import me.domirusz24.pk.probending.probending.arena.*;
-import java.util.*;
+import me.domirusz24.pk.probending.probending.arena.Arena;
+import me.domirusz24.pk.probending.probending.arena.misc.ArenaGetters;
+import me.domirusz24.pk.probending.probending.arena.stages.StageEnum;
+import me.domirusz24.pk.probending.probending.arena.stages.StageTeleports;
+import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArenaCreateCompleter implements TabCompleter
 {
@@ -24,35 +32,46 @@ public class ArenaCreateCompleter implements TabCompleter
             }else
             if (args.length == 2) {
                 if (sender.hasPermission("probending.arena.config") || sender.isOp()) {
-                    for (final StageEnum e : StageEnum.values()) {
-                        complete.add(e.toString());
-                    }
-                    complete.add("setTBStage");
-                    complete.add("getTBStage");
-                    complete.add("setRollBack");
-                    complete.add("getRollBack");
+                    complete.add("set");
+                    complete.add("get");
                 }
             }else
             if (args.length == 3) {
                 if (sender.hasPermission("probending.arena.config") || sender.isOp()) {
-                    if (!args[1].equalsIgnoreCase("setRollBack") || !args[1].equalsIgnoreCase("getRollBack")) {
-                        if (args[1].equalsIgnoreCase("setTBStage") || args[1].equalsIgnoreCase("getTBStage")) {
-                            complete.add("1 - 10");
-                        } else {
-                            complete.add("player1");
-                            complete.add("player2");
-                            complete.add("player3");
-                            complete.add("center");
+                    for (StageEnum e : StageEnum.values()) {
+                        if (e.equals(StageEnum.Line) || e.equals(StageEnum.WholeArena) || e.equals(StageEnum.BackRED) || e.equals(StageEnum.BackBLUE)) {
+                            continue;
                         }
+                        complete.add(e.toString());
                     }
+                    for (ArenaGetters e : ArenaGetters.values()) {
+                        complete.add(e.getName());
+                    }
+                    complete.add("RollBack");
+                    complete.add("TBStage");
+
                 }
             }else
             if (args.length == 4) {
                 if (sender.hasPermission("probending.arena.config") || sender.isOp()) {
-                    complete.add("teleport");
+                    if (args[2].equalsIgnoreCase("tbstage")) {
+                        for (int i = 1; i < 11; i++) {
+                            complete.add(String.valueOf(i));
+                        }
+                    }
+                    ArrayList<String> triggers = new ArrayList<>();
+                    for (StageEnum e : StageEnum.values()) {
+                        assert e.toString() != null;
+                        triggers.add(e.toString().toLowerCase());
+                    }
+                    if (triggers.contains(args[2].toLowerCase())) {
+                        for (StageTeleports s : StageTeleports.values()) {
+                            complete.add(s.getShortcut());
+                        }
+                    }
                 }
             }
-            return complete;
+            return GeneralMethods.getPossibleCompletions(args, complete);
         }
         return null;
     }

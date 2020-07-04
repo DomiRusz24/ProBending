@@ -6,6 +6,9 @@ import me.domirusz24.pk.probending.probending.arena.commands.ArenaCreateCommand;
 import me.domirusz24.pk.probending.probending.arena.commands.ArenaCreateCompleter;
 import me.domirusz24.pk.probending.probending.arena.commands.PBCCompleter;
 import me.domirusz24.pk.probending.probending.arena.commands.ProBendingControlCommand;
+import me.domirusz24.pk.probending.probending.config.ArenaLocationsConfig;
+import me.domirusz24.pk.probending.probending.config.ArenaTBStagesConfig;
+import me.domirusz24.pk.probending.probending.config.ConfigMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,7 +21,9 @@ public final class ProBending extends JavaPlugin
     public static ProBending plugin;
     private FileConfiguration customConfig;
     private File customConfigFile;
-    public static String prefix = ChatColor.BOLD + "" + ChatColor.BLUE + "[ProBending]";
+    public static String prefix = ChatColor.BOLD + "" + ChatColor.BLUE + "[ProBending]" + ChatColor.RESET + " ";
+    public static String errorPrefix = prefix + ChatColor.BOLD + "" + ChatColor.RED + "[ERROR]" + ChatColor.RESET + "" + ChatColor.RED + " ";
+    public static String successPrefix = prefix + ChatColor.BOLD + "" + ChatColor.GREEN + "[SUCCESS]" + ChatColor.RESET + "" + ChatColor.GREEN + " ";
 
     public void onEnable() {
         System.out.println("ProBending zostal wlaczony!");

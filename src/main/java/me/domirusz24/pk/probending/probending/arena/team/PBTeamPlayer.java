@@ -1,10 +1,12 @@
-package me.domirusz24.pk.probending.probending.arena;
+package me.domirusz24.pk.probending.probending.arena.team;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import me.domirusz24.pk.probending.probending.ProBending;
-import org.bukkit.entity.*;
-import com.projectkorra.projectkorra.*;
-import org.bukkit.*;
-import org.bukkit.material.MaterialData;
+import me.domirusz24.pk.probending.probending.arena.stages.StageEnum;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
 public class PBTeamPlayer
 {

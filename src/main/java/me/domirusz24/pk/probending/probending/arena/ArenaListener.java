@@ -1,14 +1,21 @@
 package me.domirusz24.pk.probending.probending.arena;
 
-import me.domirusz24.pk.probending.probending.arena.temp.TempTeam;
+import me.domirusz24.pk.probending.probending.arena.team.TempTeam;
 import org.bukkit.GameMode;
-import org.bukkit.event.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.*;
-import java.util.*;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ArenaListener implements Listener {
     public static ArrayList<Player> freezePlayers = new ArrayList<>();

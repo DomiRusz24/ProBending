@@ -1,11 +1,15 @@
 package me.domirusz24.pk.probending.probending.arena.commands;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import me.domirusz24.pk.probending.probending.arena.*;
-import me.domirusz24.pk.probending.probending.*;
-import java.util.*;
+import me.domirusz24.pk.probending.probending.ProBending;
+import me.domirusz24.pk.probending.probending.arena.Arena;
+import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PBCCompleter implements TabCompleter
 {
@@ -13,6 +17,9 @@ public class PBCCompleter implements TabCompleter
         if (sender instanceof Player && command.getName().equalsIgnoreCase("pbc")) {
             final List<String> complete = new ArrayList<String>();
             if (args.length == 1) {
+                if (sender.hasPermission("probending.autostart")) {
+                    complete.add("autostart");
+                }
                 complete.add("stopspectate");
                 complete.add("rules");
                 for (final Arena arena : Arena.Arenas) {
@@ -22,14 +29,14 @@ public class PBCCompleter implements TabCompleter
             if (args.length == 2) {
                 if (sender.hasPermission("probending.arena.modify") || sender.isOp()) {
                     complete.add("add");
+                    complete.add("start");
+                    complete.add("autostart");
                     complete.add("stop");
                     complete.add("remove");
-                    complete.add("start");
                     complete.add("teleport");
                     complete.add("forcestart");
                     complete.add("resetTempTeams");
                     complete.add("forceNextRound");
-                    complete.add("forceTieBreaker");
                 }
                 complete.add("spectate");
             }
@@ -48,7 +55,7 @@ public class PBCCompleter implements TabCompleter
                     complete.add("red");
                 }
             }
-            return complete;
+            return GeneralMethods.getPossibleCompletions(args, complete);
         }
         return null;
     }

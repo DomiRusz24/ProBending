@@ -1,13 +1,17 @@
 package me.domirusz24.pk.probending.probending.arena.commands;
 
-import org.bukkit.attribute.Attribute;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import org.bukkit.*;
-import java.util.function.*;
-import me.domirusz24.pk.probending.probending.arena.*;
-import me.domirusz24.pk.probending.probending.*;
-import java.util.*;
+import me.domirusz24.pk.probending.probending.ProBending;
+import me.domirusz24.pk.probending.probending.arena.Arena;
+import me.domirusz24.pk.probending.probending.arena.team.TeamTag;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class ProBendingControlCommand implements CommandExecutor
 {
@@ -16,7 +20,7 @@ public class ProBendingControlCommand implements CommandExecutor
             final Player player = (Player)sender;
             if (command.getName().equalsIgnoreCase("pbc")) {
                 if (args.length == 0) {
-                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj ID areny!");
+                    player.sendMessage(ProBending.errorPrefix +  "Prosze podaj ID areny!");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("help")) {
@@ -27,24 +31,38 @@ public class ProBendingControlCommand implements CommandExecutor
                     if (args[0].equalsIgnoreCase("stopspectate")) {
                         if (Arena.getPlayersSpectating().containsKey(player)) {
                             Arena.getPlayersSpectating().get(player).removeSpectator(player);
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Przestales spektatowac gre!");
+                            player.sendMessage(ProBending.successPrefix +  "Przestales spektatowac gre!");
                         } else {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Musisz byc spektatorem aby wyjsc!");
+                            player.sendMessage(ProBending.errorPrefix +  "Musisz byc spektatorem aby wyjsc!");
                         }
                         return true;
                     } else if (args[0].equalsIgnoreCase("rules")) {
                         Arena.getArenaRules().forEach(player::sendMessage);
                         return true;
+                    } else if (args[0].equalsIgnoreCase("autostart")) {
+                        if (!player.hasPermission("probending.autostart")) {
+                            player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
+                            return false;
+                        }
+                        for (Arena arena : Arena.Arenas) {
+                            if (!arena.isInGame()) {
+                                if (arena.autoStart()) {
+                                    player.sendMessage(ProBending.successPrefix + "Arena " + arena.getID() + " zostala rozpoczeta!");
+                                    return false;
+                                }
+                            }
+                            player.sendMessage(ProBending.errorPrefix + "Zadna arena sie nie rozpoczela1");
+                        }
                     }
                     Arena arena;
                     try {
                         arena = Arena.getArenaFromID(args[0]);
                     } catch (NumberFormatException e) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "ID areny musi byc liczba!");
+                        player.sendMessage(ProBending.errorPrefix +  "ID areny musi byc liczba!");
                         return true;
                     }
                     if (arena == null) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Takie ID areny nie istnieje!");
+                        player.sendMessage(ProBending.errorPrefix +  "Takie ID areny nie istnieje!");
                         return true;
                     }
                     arena.displayArenaInfo(player);
@@ -56,22 +74,22 @@ public class ProBendingControlCommand implements CommandExecutor
                         arena = Arena.getArenaFromID(args[0]);
                     }
                     catch (NumberFormatException e) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "ID areny musi byc liczba!");
+                        player.sendMessage(ProBending.errorPrefix +  "ID areny musi byc liczba!");
                         return true;
                     }
                     if (arena == null) {
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Takie ID areny nie istnieje!");
+                        player.sendMessage(ProBending.errorPrefix +  "Takie ID areny nie istnieje!");
                         return true;
                     }
                     final String s = args[1];
                     switch (s.toLowerCase()) {
                         case "start": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (arena.isInGame()) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                                 return true;
                             }
                             arena.startGameWithFeedBack(player);
@@ -80,120 +98,124 @@ public class ProBendingControlCommand implements CommandExecutor
                         case "spectate": {
                             if (Arena.playersPlaying.contains(player)) {
 
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie mozesz spektatowac w trakcie gry!");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie mozesz spektatowac w trakcie gry!");
                                 return true;
 
                             } else if (!arena.isInGame()) {
 
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie zaczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra jeszcze sie nie zaczela!");
                                 return true;
 
                             } else {
                                 arena.addSpectator(player, false);
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Spektetujesz gre w arenie " + arena.getID() + "!");
+                                player.setGameMode(GameMode.SPECTATOR);
+                                player.sendMessage(ProBending.successPrefix +  "Spektetujesz gre w arenie " + arena.getID() + "!");
                                 return true;
 
                             }
                         }
                         case "teleport": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (arena.getCenter() == null) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Jakims cudem srodek nie istnieje...");
+                                player.sendMessage(ProBending.errorPrefix +  "Jakims cudem srodek nie istnieje...");
 
                             } else {
                                 Location t = arena.getCenter();
                                 t.setY(t.getY() + 6);
                                 player.teleport(t);
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zostales przeteleportowany na srodek areny " + arena.getID() + "!");
+                                player.sendMessage(ProBending.successPrefix +  "Zostales przeteleportowany na srodek areny " + arena.getID() + "!");
                             }
                             return true;
                         }
                         case "forcestart": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (arena.isInGame()) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                                 return true;
                             }
                             arena.forceStart(player);
                             return true;
                         }
+                        case "autostart": {
+                            if (!player.hasPermission("probending.arena.modify")) {
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
+                                return true;
+                            }
+                            if (arena.isInGame()) {
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
+                                return true;
+                            }
+                            if (arena.autoStart()) {
+                                player.sendMessage(ProBending.successPrefix +  "Gra zostala rozpoczeta!");
+                            } else {
+                                player.sendMessage(ProBending.errorPrefix +  "Gra sie nie rozpoczela z powodu braku graczy!");
+                            }
+                            return true;
+                        }
                         case "stop": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (!arena.isInGame()) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra jeszcze sie nie rozpoczela!");
                                 return true;
                             }
                             arena.stopGame();
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zakonczono gre!");
+                            player.sendMessage(ProBending.successPrefix +  "Zakonczono gre!");
                             return true;
                         }
                         case "resettempteams": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (arena.isInGame()) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                             } else {
                                 arena.getTempTeamByTag(TeamTag.BLUE).removeAllPlayers();
                                 arena.getTempTeamByTag(TeamTag.RED).removeAllPlayers();
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto wszystkich playerow z oczekujacych druzyn!");
+                                player.sendMessage(ProBending.successPrefix +  "Usunieto wszystkich playerow z oczekujacych druzyn!");
                             }
                             return true;
                         }
                         case "forcenextround": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
                             if (arena.isInGame()) {
                                 arena.nextMidRound();
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zaczeto runde " + arena.getRoundNumber() + "!");
+                                player.sendMessage(ProBending.successPrefix +  "Zaczeto runde " + arena.getRoundNumber() + "!");
                             } else {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
-                            }
-                            return true;
-                        }
-                        case "forcetiebreaker": {
-                            if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
-                                return true;
-                            }
-                            if (arena.isInGame()) {
-                                arena.startTieBreaker();
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Zaczeto TieBreaker!");
-                            } else {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra jeszcze sie nie rozpoczela!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta gra jeszcze sie nie rozpoczela!");
                             }
                             return true;
                         }
                         case "add": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj jakiego gracza dodac!");
+                            player.sendMessage(ProBending.errorPrefix +  "Prosze podaj jakiego gracza dodac!");
                             return true;
                         }
                         case "remove": {
                             if (!player.hasPermission("probending.arena.modify")) {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                                 return true;
                             }
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj jakiego gracza usunac!");
+                            player.sendMessage(ProBending.errorPrefix +  "Prosze podaj jakiego gracza usunac!");
                             return true;
                         }
                         default: {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawny argument!");
+                            player.sendMessage(ProBending.errorPrefix +  "Nie poprawny argument!");
                             return true;
                         }
                     }
@@ -201,14 +223,14 @@ public class ProBendingControlCommand implements CommandExecutor
                 else {
                     if (args.length == 3) {
                         if (!player.hasPermission("probending.arena.modify")) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                            player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                             return true;
                         }
-                        player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Prosze podaj do jakiej druzyny dodac gracza!");
+                        player.sendMessage(ProBending.errorPrefix +  "Prosze podaj do jakiej druzyny dodac gracza!");
                     }
                     if (args.length == 4) {
                         if (!player.hasPermission("probending.arena.modify")) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie masz wystarczajacych permisji");
+                            player.sendMessage(ProBending.errorPrefix +  "Nie masz wystarczajacych permisji");
                             return true;
                         }
                         Arena arena;
@@ -216,24 +238,24 @@ public class ProBendingControlCommand implements CommandExecutor
                             arena = Arena.getArenaFromID(args[0]);
                         }
                         catch (NumberFormatException e) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "ID areny musi byc liczba!");
+                            player.sendMessage(ProBending.errorPrefix +  "ID areny musi byc liczba!");
                             return true;
                         }
                         if (arena == null) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Takie ID areny nie istnieje!");
+                            player.sendMessage(ProBending.errorPrefix +  "Takie ID areny nie istnieje!");
                             return true;
                         }
                         if (arena.isInGame()) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta gra juz sie rozpoczela!");
+                            player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                             return true;
                         }
                         final Player target = ProBending.plugin.getServer().getPlayer(args[2]);
                         if (target == null) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Player " + args[2] + " nie jest online!");
+                            player.sendMessage(ProBending.errorPrefix +  "Player " + args[2] + " nie jest online!");
                             return true;
                         }
                         if (Arena.playersPlaying.contains(target)) {
-                            player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Gracz " + target.getName() + " juz jest w grze!");
+                            player.sendMessage(ProBending.errorPrefix +  "Gracz " + target.getName() + " juz jest w grze!");
                             return true;
                         }
                         final String s2 = args[3];
@@ -248,7 +270,7 @@ public class ProBendingControlCommand implements CommandExecutor
                                 break;
                             }
                             default: {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawna druzyna!");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie poprawna druzyna!");
                                 return true;
                             }
                         }
@@ -257,23 +279,23 @@ public class ProBendingControlCommand implements CommandExecutor
                             case "add": {
                                 if (!arena.getTempTeamByTag(joinTeam).readyToPlay()) {
                                     arena.getTempTeamByTag(joinTeam).addPlayer(target);
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Dodano gracza " + target.getName() + " do druzyny!");
+                                    player.sendMessage(ProBending.successPrefix +  "Dodano gracza " + target.getName() + " do druzyny!");
                                     return true;
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta druzyna jest pelna!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta druzyna jest pelna!");
                                 return true;
                             }
                             case "remove": {
                                 if (arena.getTempTeamByTag(joinTeam).getAllPlayers().contains(target)) {
                                     arena.getTempTeamByTag(joinTeam).removePlayer(target);
-                                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN + "Usunieto gracza " + target.getName() + " z druzyny!");
+                                    player.sendMessage(ProBending.successPrefix +  "Usunieto gracza " + target.getName() + " z druzyny!");
                                     return true;
                                 }
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Ta osoba nie jest w tej druzynie!");
+                                player.sendMessage(ProBending.errorPrefix +  "Ta osoba nie jest w tej druzynie!");
                                 return true;
                             }
                             default: {
-                                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawny argument! (add, remove)");
+                                player.sendMessage(ProBending.errorPrefix +  "Nie poprawny argument! (add, remove)");
                                 return true;
                             }
                         }
@@ -293,6 +315,7 @@ public class ProBendingControlCommand implements CommandExecutor
             info.add(c + "/pbc rules - Wyswietla zasady gry");
             info.add(c + "/pbc (ID ARENY) - Wyswietla informacje o arenie.");
             info.add(c + "/pbc stopspectate - Zakoncza spektacje meczu.");
+            info.add(c + "/pbc autostart - Automatycznie startuje jedna gotowa gre.");
             info.add(c + "/pbc (ID ARENY) spectate - Zaczyna spektacje meczu.");
             info.add(c + "/pbc (ID ARENY) add (GRACZ) (RED/BLUE) - Dodaje gracza do oczekujacej druzyny.");
             info.add(c + "/pbc (ID ARENY) remove (GRACZ) (RED/BLUE) - Usuwa gracza z oczekujacej druzyny.");
@@ -302,6 +325,7 @@ public class ProBendingControlCommand implements CommandExecutor
         } else {
             if (args[1].equalsIgnoreCase("2")) {
                 info.add(c + "/pbc (ID ARENY) start - Rozpoczyna gre");
+                info.add(c + "/pbc (ID ARENY) autostart - Automatycznie rozpoczyna gre");
                 info.add(c + "/pbc (ID ARENY) stop - Zakoncza gre");
                 info.add(c + "/pbc (ID ARENY) forcestart - Wymusza rozpoczenie gry");
                 info.add(c + "/pbc (ID ARENY) forcenextround - Wymusza nastepna runde");
@@ -310,7 +334,7 @@ public class ProBendingControlCommand implements CommandExecutor
                 info.add("");
                 info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 2 z 2)");
             } else {
-                player.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Nie poprawna strona!");
+                player.sendMessage(ProBending.errorPrefix +  "Nie poprawna strona!");
                 return;
             }
         }

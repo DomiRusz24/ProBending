@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending;
+package me.domirusz24.pk.probending.probending.config;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -1,8 +1,10 @@
-package me.domirusz24.pk.probending.probending.arena.temp;
+package me.domirusz24.pk.probending.probending.arena.team;
 
-import me.domirusz24.pk.probending.probending.ProBending;
-import org.bukkit.entity.*;
-import java.util.*;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class TempTeam
 {
@@ -22,6 +24,19 @@ public class TempTeam
         this.player2 = null;
         this.player3 = null;
         this.addPlayer(player1);
+    }
+
+    public ArrayList<String> getInfo() {
+        ArrayList<String> info = new ArrayList<>();
+        if (getAllPlayers(true) != null) {
+            int i = 0;
+            for (final Player player : getAllPlayers(true)) {
+                ++i;
+                final String playerstatus = (player == null) ? "NIE DODANY" : player.getName();
+                info.add("Gracz " + i + ": " + playerstatus);
+            }
+        }
+        return info;
     }
     
     public TempTeam(final Player player1, final Player player2) {
@@ -134,6 +149,23 @@ public class TempTeam
             }
         }
         return list;
+    }
+
+    private void setPlayerTo(int id, Player player) {
+        switch(id) {
+            case 1: {
+                player1 = player;
+                return;
+            }
+            case 2: {
+                player2 = player;
+                return;
+            }
+            case 3: {
+                player3 = player;
+                return;
+            }
+        }
     }
     
     public boolean readyToPlay() {

@@ -1,6 +1,8 @@
-package me.domirusz24.pk.probending.probending.arena;
+package me.domirusz24.pk.probending.probending.arena.stages;
 
-import java.util.*;
+import me.domirusz24.pk.probending.probending.arena.team.TeamTag;
+
+import java.util.ArrayList;
 
 public enum StageEnum
 {
