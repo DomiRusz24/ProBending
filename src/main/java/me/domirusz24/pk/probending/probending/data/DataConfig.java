@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.config;
+package me.domirusz24.pk.probending.probending.data;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -7,12 +7,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 
-public class ArenaTBStagesConfig {
+public class DataConfig {
     private static File file;
     private static FileConfiguration config;
 
     public static void setup() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("ProBending").getDataFolder(), "locations/TBStages.yml");
+        file = new File(Bukkit.getServer().getPluginManager().getPlugin("ProBending").getDataFolder(), "Data/PlayerData.yml");
 
         if (!file.exists()){
             try {

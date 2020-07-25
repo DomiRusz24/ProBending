@@ -24,6 +24,8 @@
     <orderEntry type="library" name="worldguard-bukkit-6.2.2" level="project" />
     <orderEntry type="library" name="worldedit-bukkit-6.1.9" level="project" />
     <orderEntry type="library" name="RollbackCore-2.4.2 (for 1.12.2 or older)" level="project" />
+    <orderEntry type="library" name="Skript" level="project" />
+    <orderEntry type="library" name="BetonQuest" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
@@ -52,9 +54,28 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="Maven: pl.betoncraft.betonquest.:BetonQuest:1.11">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/BetonQuest.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="Maven: net.shadowxcraft.rollbackcore:rollbackcore:2.4.2">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/RollbackCore-2.4.2 (for 1.12.2 or older).jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.coloredcarrot.api.sidebart:SidebarAPI:2.9">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/SidebarAPI.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

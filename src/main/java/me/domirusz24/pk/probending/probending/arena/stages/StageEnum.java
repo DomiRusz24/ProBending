@@ -25,11 +25,10 @@ public enum StageEnum
     private final byte data;
     private final TeamTag teamTag;
     
-    private StageEnum(final int ID, final TeamTag teamTag, final byte data) {
+    StageEnum(final int ID, final TeamTag teamTag, final byte data) {
         this.ID = ID;
         this.data = data;
         this.teamTag = teamTag;
-        // ZROB 1, 2, 3, 4 BLUE RED
     }
 
 

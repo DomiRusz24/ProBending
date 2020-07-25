@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 
@@ -28,15 +29,7 @@ public class ProBendingControlCommand implements CommandExecutor
                         return true;
                 }
                 if (args.length == 1) {
-                    if (args[0].equalsIgnoreCase("stopspectate")) {
-                        if (Arena.getPlayersSpectating().containsKey(player)) {
-                            Arena.getPlayersSpectating().get(player).removeSpectator(player);
-                            player.sendMessage(ProBending.successPrefix +  "Przestales spektatowac gre!");
-                        } else {
-                            player.sendMessage(ProBending.errorPrefix +  "Musisz byc spektatorem aby wyjsc!");
-                        }
-                        return true;
-                    } else if (args[0].equalsIgnoreCase("rules")) {
+                    if (args[0].equalsIgnoreCase("rules")) {
                         Arena.getArenaRules().forEach(player::sendMessage);
                         return true;
                     } else if (args[0].equalsIgnoreCase("autostart")) {
@@ -46,10 +39,9 @@ public class ProBendingControlCommand implements CommandExecutor
                         }
                         for (Arena arena : Arena.Arenas) {
                             if (!arena.isInGame()) {
-                                if (arena.autoStart()) {
-                                    player.sendMessage(ProBending.successPrefix + "Arena " + arena.getID() + " zostala rozpoczeta!");
-                                    return false;
-                                }
+                                arena.getPlayersFromGetters();
+                                arena.startGame(player, false);
+                                return false;
                             }
                             player.sendMessage(ProBending.errorPrefix + "Zadna arena sie nie rozpoczela1");
                         }
@@ -92,7 +84,7 @@ public class ProBendingControlCommand implements CommandExecutor
                                 player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                                 return true;
                             }
-                            arena.startGameWithFeedBack(player);
+                            arena.startGame(player, false);
                             return true;
                         }
                         case "spectate": {
@@ -108,7 +100,12 @@ public class ProBendingControlCommand implements CommandExecutor
 
                             } else {
                                 arena.addSpectator(player, false);
-                                player.setGameMode(GameMode.SPECTATOR);
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            player.setGameMode(GameMode.SPECTATOR);
+                                        }
+                                    }.runTaskLater(ProBending.plugin, 1);
                                 player.sendMessage(ProBending.successPrefix +  "Spektetujesz gre w arenie " + arena.getID() + "!");
                                 return true;
 
@@ -139,7 +136,7 @@ public class ProBendingControlCommand implements CommandExecutor
                                 player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                                 return true;
                             }
-                            arena.forceStart(player);
+                            arena.startGame(player, true);
                             return true;
                         }
                         case "autostart": {
@@ -151,11 +148,8 @@ public class ProBendingControlCommand implements CommandExecutor
                                 player.sendMessage(ProBending.errorPrefix +  "Ta gra juz sie rozpoczela!");
                                 return true;
                             }
-                            if (arena.autoStart()) {
-                                player.sendMessage(ProBending.successPrefix +  "Gra zostala rozpoczeta!");
-                            } else {
-                                player.sendMessage(ProBending.errorPrefix +  "Gra sie nie rozpoczela z powodu braku graczy!");
-                            }
+                            arena.getPlayersFromGetters();
+                            arena.startGame(player, false);
                             return true;
                         }
                         case "stop": {

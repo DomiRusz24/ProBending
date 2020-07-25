@@ -62,6 +62,10 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -86,11 +90,31 @@
             <systemPath>${project.basedir}/lib/worldedit-bukkit-6.1.9.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>pl.betoncraft.betonquest.</groupId>
+            <artifactId>BetonQuest</artifactId>
+            <version>1.11</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/BetonQuest.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>net.shadowxcraft.rollbackcore</groupId>
             <artifactId>rollbackcore</artifactId>
             <version>2.4.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/RollbackCore-2.4.2 (for 1.12.2 or older).jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
+            <artifactId>holographicdisplays-api</artifactId>
+            <version>2.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.coloredcarrot.api.sidebart</groupId>
+            <artifactId>SidebarAPI</artifactId>
+            <version>2.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/SidebarAPI.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

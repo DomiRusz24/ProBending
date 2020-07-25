@@ -23,11 +23,13 @@ public class ArenaCreateCompleter implements TabCompleter
                     complete.add("create");
                 }
                 if (sender.hasPermission("probending.arena.config") || sender.isOp()) {
-                    complete.add("setspawn");
-                    complete.add("teleportspawn");
                     for (final Arena arena : Arena.Arenas) {
                         complete.add(String.valueOf(arena.getID()));
                     }
+                    complete.add("setSpawn");
+                    complete.add("getSpawn");
+                    complete.add("setArenaList");
+                    complete.add("getArenaList");
                 }
             }else
             if (args.length == 2) {
@@ -49,7 +51,8 @@ public class ArenaCreateCompleter implements TabCompleter
                     }
                     complete.add("RollBack");
                     complete.add("TBStage");
-
+                    complete.add("hologram");
+                    complete.add("center");
                 }
             }else
             if (args.length == 4) {

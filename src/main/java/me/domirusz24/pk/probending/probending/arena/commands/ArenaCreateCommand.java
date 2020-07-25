@@ -8,6 +8,7 @@ import me.domirusz24.pk.probending.probending.ProBending;
 import me.domirusz24.pk.probending.probending.arena.Arena;
 import me.domirusz24.pk.probending.probending.arena.misc.ArenaGetter;
 import me.domirusz24.pk.probending.probending.arena.misc.ArenaGetters;
+import me.domirusz24.pk.probending.probending.arena.misc.ListHologram;
 import me.domirusz24.pk.probending.probending.arena.stages.Stage;
 import me.domirusz24.pk.probending.probending.arena.stages.StageEnum;
 import me.domirusz24.pk.probending.probending.arena.stages.StageTeleports;
@@ -22,7 +23,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ public class ArenaCreateCommand implements CommandExecutor {
         return true;
     }
 
-    public static void setRollBack(Player player, String arenaID, boolean addToConf) throws IOException {
+    public static void setRollBack(Player player, String arenaID, boolean addToConf) {
         WorldEditPlugin worldEditPlugin;
         worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         if (worldEditPlugin == null) {
@@ -137,31 +137,31 @@ public class ArenaCreateCommand implements CommandExecutor {
                             player.sendMessage(ProBending.errorPrefix + "Nie masz wystarczajacych permisji.");
                             return true;
                         }
-
-                        try {
-                            new Arena(player.getLocation(), String.valueOf(Arena.Arenas.size() + 1));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        new Arena(player.getLocation(), String.valueOf(Arena.Arenas.size() + 1));
                         player.sendMessage(ProBending.successPrefix + "Created an arena of the ID: " + Arena.Arenas.size());
+                        player.sendMessage(ProBending.successPrefix + "At the location: " + player.getLocation());
                         return true;
 
                     } else if (args[0].equalsIgnoreCase("setspawn")) {
-                        try {
-                            Arena.setSpawn(player.getLocation());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        Arena.setSpawn(player.getLocation());
                         player.sendMessage(ProBending.successPrefix + "Set spawn!");
                         return true;
 
-                    } else if (args[0].equalsIgnoreCase("teleportspawn")) {
+                    } else if (args[0].equalsIgnoreCase("getspawn")) {
                         if (Arena.spawn() == null) {
                             player.sendMessage(ProBending.errorPrefix + "Spawn is not set!");
                         } else {
                             player.teleport(Arena.spawn());
                             player.sendMessage(ProBending.successPrefix + "You have been teleported!");
                         }
+                        return true;
+                    } else if (args[0].equalsIgnoreCase("setArenaList")) {
+                        ListHologram.setLocation(player.getLocation());
+                        ListHologram.update();
+                        player.sendMessage(ProBending.successPrefix + "Set location of ArenaList hologram!");
+                        return true;
+                    } else if (args[0].equalsIgnoreCase("getArenaList")) {
+                        ListHologram.getInfo().forEach(player::sendMessage);
                         return true;
                     }
                     Arena arena;
@@ -222,8 +222,21 @@ public class ArenaCreateCommand implements CommandExecutor {
                                 player.sendMessage(ProBending.errorPrefix + "Could not get Arena's rollback.");
                             }
                             return true;
-                        }
+                        } else if (args[2].equalsIgnoreCase("center")) {
+                            if (arena.getCenter() != null) {
+                                player.teleport(arena.getCenter());
+                                player.sendMessage(ProBending.successPrefix + "Teleported to center in arena " + arena.getID() + "!");
+                            } else {
+                                player.sendMessage(ProBending.errorPrefix + "Center does not exist!");
+                            }
 
+                        } else if (args[2].equalsIgnoreCase("hologram")) {
+                            if (arena.getHologramManager() == null) {
+                                player.sendMessage(ProBending.errorPrefix + "Hologram nie zostal utworzony!");
+                            } else {
+                                arena.getHologramManager().getInfo().forEach(player::sendMessage);
+                            }
+                        }
                         //GET STAGE
                         else if (stageEnum != null) {
                             final Stage stage = arena.getStage(stageEnum.getID());
@@ -254,11 +267,10 @@ public class ArenaCreateCommand implements CommandExecutor {
                             ArrayList<String> info = arena.getGetter().getInfo(getter);
                             if (info != null) {
                                 info.forEach(player::sendMessage);
-                                return true;
                             } else {
                                 player.sendMessage(ProBending.errorPrefix + "Getter for " + getter.getName() + " is not set!");
-                                return true;
                             }
+                            return true;
 
                         } else {
                             player.sendMessage(ProBending.errorPrefix + "Please enter a valid getter or stage value");
@@ -291,14 +303,16 @@ public class ArenaCreateCommand implements CommandExecutor {
 
                         //SET ROLLBACK
                         else if (args[2].equalsIgnoreCase("RollBack")) {
-                            try {
-                                setRollBack(player, arena.getID(), true);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            setRollBack(player, arena.getID(), true);
                             return true;
-                        }
+                        } else if (args[2].equalsIgnoreCase("center")) {
+                            arena.setCenter(player.getLocation());
+                            player.sendMessage(ProBending.successPrefix + "Set center in arena " + arena.getID() + "!");
 
+                        } else if (args[2].equalsIgnoreCase("hologram")) {
+                            arena.getHologramManager().setLocation(player.getLocation());
+                            player.sendMessage(ProBending.successPrefix + "Set hologram in arena " + arena.getID() + "!");
+                        }
                         //SET STAGE
                         else if (stageEnum != null) {
                             final Stage stage = arena.getStage(stageEnum.getID());
@@ -312,10 +326,7 @@ public class ArenaCreateCommand implements CommandExecutor {
                                     player.sendMessage(ProBending.errorPrefix + "Invalid teleport type! (p1, p2, p3 or center)");
                                     return true;
                                 }
-                                try {
                                     stage.setTeleport(teleport, player.getLocation());
-                                } catch (IOException ignored) {
-                                }
                                 player.sendMessage(ProBending.successPrefix + "Set " + teleport.getName() + " teleport in " + stageEnum.toString() + "!");
 
                             } else {
@@ -350,23 +361,30 @@ public class ArenaCreateCommand implements CommandExecutor {
         info.add(ChatColor.BOLD + "" + ChatColor.BLUE + "~~~~~~~~~~~~~");
         if (args.length == 1 || args[1].equalsIgnoreCase("1")) {
             info.add(c + "/arena setspawn - Ustawia ogolny spawn");
-            info.add(c + "/arena teleportspawn - Teleportuje do ogolnego spawnu");
+            info.add(c + "/arena getspawn - Teleportuje do ogolnego spawnu");
+            info.add(c + "/arena setarenalist - Tworzy hologram z listami aren.");
+            info.add(c + "/arena getarenalist - Podaje informacje na temat listy z arenami.");
             info.add(c + "/arena create - Tworzy nowa arene");
-            info.add(c + "/arena (ID ARENY) set rollback - Tworzy RollBack areny");
-            info.add(c + "/arena (ID ARENY) get rollback - Manualnie rollbackuje arene");
             info.add("");
-            info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 1 z 2)");
+            info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 1 z 3)");
 
         } else {
             if (args[1].equalsIgnoreCase("2")) {
+                info.add(c + "/arena (ID ARENY) set rollback - Tworzy RollBack areny");
+                info.add(c + "/arena (ID ARENY) get rollback - Manualnie rollbackuje arene");
                 info.add(c + "/arena (ID ARENY) set tbstage (ETAP ANIMACJI) - Tworzy etap animacji TieBreakera z selekcja w WorldEdit. (0 = STAN POCZATKOWY)");
                 info.add(c + "/arena (ID ARENY) get tbstage (ETAP ANIMACJI) - Manulanie pokazuje animacje TieBreakera");
                 info.add(c + "/arena (ID ARENY) set (STREFA) (TYP TELEPORTA) - Ustawia teleport dla podanego typu na podanej strefie.");
+                info.add("");
+                info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 2 z 3)");
+            } else if (args[1].equalsIgnoreCase("3")) {
                 info.add(c + "/arena (ID ARENY) get (STREFA) (TYP TELEPORTA) - Teleportuje na podany typ teleporta na podanej strefie.");
                 info.add(c + "/arena (ID ARENY) set (GETTER) - Ustawia gettera dla podanej arenie.");
                 info.add(c + "/arena (ID ARENY) get (GETTER) - Podaje informacje na temat gettera w podanej arenie.");
+                info.add(c + "/arena (ID ARENY) set hologram - Tworzy hologram z informacjami areny.");
+                info.add(c + "/arena (ID ARENY) get hologram - Podaje informacje na temat hologramu w tej arenie.");
                 info.add("");
-                info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 2 z 2)");
+                info.add(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "(Strona 3 z 3)");
             } else {
                 player.sendMessage(ProBending.errorPrefix +  "Nie poprawna strona!");
                 return;

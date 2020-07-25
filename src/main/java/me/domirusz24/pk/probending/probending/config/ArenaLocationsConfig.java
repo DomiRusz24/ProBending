@@ -17,7 +17,7 @@ public class ArenaLocationsConfig {
         if (!file.exists()){
             try {
                 file.createNewFile();
-            }catch (IOException e) {}
+            }catch (IOException ignored) {}
         }
 
         config = YamlConfiguration.loadConfiguration(file);
@@ -28,7 +28,7 @@ public class ArenaLocationsConfig {
     public static void save() {
         try {
             config.save(file);
-        }catch (IOException e) {}
+        }catch (IOException ignored) {}
     }
 
     public static void reload() { config = YamlConfiguration.loadConfiguration(file); }

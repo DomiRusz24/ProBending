@@ -2,7 +2,7 @@ package me.domirusz24.pk.probending.probending.arena.team;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import me.domirusz24.pk.probending.probending.arena.Arena;
-import me.domirusz24.pk.probending.probending.pbgroup.PBGroup;
+import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,59 +13,43 @@ public class Team
     private PBTeamPlayer player1;
     private PBTeamPlayer player2;
     private PBTeamPlayer player3;
-    private TeamTag teamTag;
-    private Arena arena;
-    private PBGroup pbGroup;
+    private final TeamTag teamTag;
+    private final Arena arena;
     private int points;
-    
-    public Team(final Player player1, final Player player2, final Player player3, final TeamTag tag, Arena arena) {
-        this.points = 0;
-        this.arena = arena;
-        this.player1 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player1), "WATER", this);
-        this.player2 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player2), "WATER", this);
-        this.player3 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player3), "WATER", this);
-        this.teamTag = tag;
-    }
 
     public Team(TempTeam team, TeamTag tag, Arena arena) {
         this.points = 0;
         this.arena = arena;
-        this.player1 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(team.getPlayer1()), "WATER", this);
-        this.player2 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(team.getPlayer2()), "WATER", this);
-        this.player3 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(team.getPlayer3()), "WATER", this);
-        if (team instanceof PBGroup) {
-            setPbGroup((PBGroup) team);
+        for (int i = 0; i < 3; i++) {
+            if (team.getPlayer(i + 1) == null) {
+                continue;
+            }
+            BendingPlayer bp = BendingPlayer.getBendingPlayer(team.getPlayer(i + 1));
+            setPlayerTo(i + 1, new PBTeamPlayer(bp, GeneralMethods.getPlayerElement(bp), this));
         }
         this.teamTag = tag;
-
     }
-
-    public void setPbGroup(PBGroup pbGroup) {
-        if (pbGroup != null) {
-            this.pbGroup = pbGroup;
-        }
-    }
-    private void setPlayerTo(int id, Player player) {
+    private void setPlayerTo(int id, PBTeamPlayer player) {
         switch(id) {
             case 1: {
                 if (player == null) {
                     player1 = null;
                 }
-                player1 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player), "WATER", this);
+                player1 = player;
                 return;
             }
             case 2: {
                 if (player == null) {
                     player2 = null;
                 }
-                player2 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player), "WATER", this);
+                player2 = player;
                 return;
             }
             case 3: {
                 if (player == null) {
                     player3 = null;
                 }
-                player3 = new PBTeamPlayer(BendingPlayer.getBendingPlayer(player), "WATER", this);
+                player3 = player;
             }
         }
     }
@@ -86,9 +70,6 @@ public class Team
     public ArrayList<String> getInfo() {
         ArrayList<String> info = new ArrayList<>();
         info.add(ChatColor.BOLD + "" + this.getColor() + this.getPolishName().toUpperCase() + ":");
-        if (pbGroup != null) {
-            info.add("DRUZYNA: " + pbGroup.getName());
-        }
         int i = 0;
         for (final PBTeamPlayer teamPlayer : getPBPlayers(true)) {
             ++i;
@@ -149,7 +130,6 @@ public class Team
 
     public String getPolishName() {
         return this.getTeamTag() == TeamTag.BLUE ? "niebieska" : "czerwona";
-
     }
 
     public ChatColor getColor() {
@@ -184,8 +164,9 @@ public class Team
         return this.points;
     }
     
+    @SuppressWarnings("StatementWithEmptyBody")
     public ArrayList<Player> getPlayers() {
-        final ArrayList<Player> i = new ArrayList<Player>();
+        final ArrayList<Player> i = new ArrayList<>();
         i.add(this.player1 == null ? null : this.player1.getPlayer());
         i.add(this.player2 == null ? null : this.player2.getPlayer());
         i.add(this.player3 == null ? null : this.player3.getPlayer());
@@ -212,9 +193,21 @@ public class Team
     
     public ArrayList<PBTeamPlayer> getPBPlayers(final boolean nullValues) {
         final ArrayList<PBTeamPlayer> i = new ArrayList<>();
-        i.add(this.player1.getPlayer() == null ? null : this.player1);
-        i.add(this.player2.getPlayer() == null ? null : this.player2);
-        i.add(this.player3.getPlayer() == null ? null : this.player3);
+        if (this.player1 != null) {
+            i.add(this.player1.getPlayer() == null ? null : this.player1);
+        } else {
+            i.add(null);
+        }
+        if (this.player2 != null) {
+            i.add(this.player2.getPlayer() == null ? null : this.player2);
+        } else {
+            i.add(null);
+        }
+        if (this.player3 != null) {
+            i.add(this.player3.getPlayer() == null ? null : this.player3);
+        } else {
+            i.add(null);
+        }
         if (!nullValues) {
             while (i.remove(null)) {
             }
@@ -225,9 +218,15 @@ public class Team
     
     public ArrayList<PBTeamPlayer> getPBPlayers() {
         final ArrayList<PBTeamPlayer> i = new ArrayList<>();
-        i.add(this.player1.getPlayer() == null ? null : this.player1);
-        i.add(this.player2.getPlayer() == null ? null : this.player2);
-        i.add(this.player3.getPlayer() == null ? null : this.player3);
+        if (this.player1 != null) {
+            i.add(this.player1.getPlayer() == null ? null : this.player1);
+        }
+        if (this.player2 != null) {
+            i.add(this.player2.getPlayer() == null ? null : this.player2);
+        }
+        if (this.player3 != null) {
+            i.add(this.player3.getPlayer() == null ? null : this.player3);
+        }
         while (i.remove(null)) {
         }
         i.removeIf(e -> e.getPlayer() == null);

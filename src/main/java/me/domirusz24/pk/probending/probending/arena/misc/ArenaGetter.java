@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class ArenaGetter {
-    private Arena arena;
+    private final Arena arena;
 
     public ArenaGetter(Arena arena) {
         this.arena = arena;

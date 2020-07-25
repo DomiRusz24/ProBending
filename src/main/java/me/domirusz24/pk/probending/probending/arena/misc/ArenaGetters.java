@@ -16,7 +16,7 @@ public enum ArenaGetters {
         return null;
     }
 
-    private String name;
+    private final String name;
 
     ArenaGetters(String name) {
         this.name = name;

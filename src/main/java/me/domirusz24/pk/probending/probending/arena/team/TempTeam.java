@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TempTeam
 {
-    public static HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
+    public static final HashMap<Player, TempTeam> playersWaiting = new HashMap<>();
     private Player player1;
     private Player player2;
     private Player player3;
@@ -129,6 +129,7 @@ public class TempTeam
         this.getAllPlayers().forEach(this::removePlayer);
     }
     
+    @SuppressWarnings("StatementWithEmptyBody")
     public List<Player> getAllPlayers() {
         final List<Player> list = new ArrayList<>();
         list.add(getPlayer1());
@@ -163,7 +164,6 @@ public class TempTeam
             }
             case 3: {
                 player3 = player;
-                return;
             }
         }
     }

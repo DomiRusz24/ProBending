@@ -19,6 +19,19 @@ public enum StageTeleports {
         return null;
     }
 
+    public static StageTeleports getStageFromNumber(int value) {
+        switch (value) {
+            case 1:
+                return StageTeleports.Player1;
+            case 2:
+                return StageTeleports.Player2;
+            case 3:
+                return StageTeleports.Player3;
+            default:
+                return StageTeleports.Center;
+        }
+    }
+
     private final String name;
     private final String shortcut;
 

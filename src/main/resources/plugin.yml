@@ -1,10 +1,16 @@
 name: ProBending
 version: 1.12.2
 main: me.domirusz24.pk.probending.probending.ProBending
-depends: [WorldEdit]
+depends: [WorldEdit, HolographicDisplays]
 commands:
   arena:
     description: Ustawienia areny
   pbc:
     description: Korzystanie z areny
+  leave:
+    description: Wyscie z areny
+  statystyki:
+    description: Statystyki
+  kity:
+    description: Kity
 

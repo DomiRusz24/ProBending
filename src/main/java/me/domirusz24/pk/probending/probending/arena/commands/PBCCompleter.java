@@ -15,7 +15,7 @@ public class PBCCompleter implements TabCompleter
 {
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (sender instanceof Player && command.getName().equalsIgnoreCase("pbc")) {
-            final List<String> complete = new ArrayList<String>();
+            final List<String> complete = new ArrayList<>();
             if (args.length == 1) {
                 if (sender.hasPermission("probending.autostart")) {
                     complete.add("autostart");

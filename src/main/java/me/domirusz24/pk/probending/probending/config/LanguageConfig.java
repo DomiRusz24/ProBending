@@ -11,13 +11,14 @@ public class LanguageConfig {
     private static File file;
     private static FileConfiguration config;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void setup() {
         file = new File(Bukkit.getServer().getPluginManager().getPlugin("ProBending").getDataFolder(), "language.yml");
 
         if (!file.exists()){
             try {
                 file.createNewFile();
-            }catch (IOException e) {}
+            }catch (IOException ignored) {}
         }
 
         config = YamlConfiguration.loadConfiguration(file);
@@ -28,7 +29,7 @@ public class LanguageConfig {
     public static void save() {
         try {
             config.save(file);
-        }catch (IOException e) {}
+        }catch (IOException ignored) {}
     }
 
     public static void reload() { config = YamlConfiguration.loadConfiguration(file); }

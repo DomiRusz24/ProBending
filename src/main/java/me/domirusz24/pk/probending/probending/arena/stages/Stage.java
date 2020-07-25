@@ -4,8 +4,6 @@ import me.domirusz24.pk.probending.probending.arena.Arena;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
 import org.bukkit.Location;
 
-import java.io.IOException;
-
 public class Stage
 {
     private final StageEnum stage;
@@ -33,7 +31,7 @@ public class Stage
         }
     }
     
-    public void setCenter(final Location center) throws IOException {
+    public void setCenter(final Location center) {
         ConfigMethods.saveLocation(configEntry + ".center", center);
     }
     
@@ -45,7 +43,7 @@ public class Stage
         return ConfigMethods.getLocation(configEntry + ".player1");
     }
     
-    public void setPlayer1Teleport(final Location player1Teleport) throws IOException {
+    public void setPlayer1Teleport(final Location player1Teleport) {
         ConfigMethods.saveLocation(configEntry + ".player1", player1Teleport);
     }
     
@@ -53,7 +51,7 @@ public class Stage
         return ConfigMethods.getLocation(configEntry + ".player2");
     }
     
-    public void setPlayer2Teleport(final Location player2Teleport) throws IOException {
+    public void setPlayer2Teleport(final Location player2Teleport) {
         ConfigMethods.saveLocation(configEntry + ".player2", player2Teleport);
     }
     
@@ -61,7 +59,7 @@ public class Stage
         return ConfigMethods.getLocation(configEntry + ".player3");
     }
     
-    public void setPlayer3Teleport(final Location player3Teleport) throws IOException {
+    public void setPlayer3Teleport(final Location player3Teleport) {
         ConfigMethods.saveLocation(configEntry + ".player3", player3Teleport);
     }
 
@@ -69,7 +67,7 @@ public class Stage
         return ConfigMethods.getLocation(configEntry + "." + teleport.getName());
     }
 
-    public void setTeleport(StageTeleports teleport, Location location) throws IOException {
+    public void setTeleport(StageTeleports teleport, Location location) {
         ConfigMethods.saveLocation(configEntry + "." + teleport.getName(), location);
     }
     
