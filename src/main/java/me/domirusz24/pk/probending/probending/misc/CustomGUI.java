@@ -31,7 +31,6 @@ public abstract class CustomGUI {
     }
 
     public void close(InventoryCloseEvent event) {
-        System.out.println("Inventory close event");
         PLAYER_ACTIVE_GUI.remove(player);
         onClose(event);
     }

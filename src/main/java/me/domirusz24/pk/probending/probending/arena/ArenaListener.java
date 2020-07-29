@@ -5,7 +5,7 @@ import me.domirusz24.pk.probending.probending.arena.misc.ListHologram;
 import me.domirusz24.pk.probending.probending.arena.team.TempTeam;
 import me.domirusz24.pk.probending.probending.misc.CustomGUI;
 import me.domirusz24.pk.probending.probending.misc.CustomItem;
-import me.domirusz24.pk.probending.probending.misc.GUIS.SpectatorGUI;
+import me.domirusz24.pk.probending.probending.misc.guis.SpectatorGUI;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -168,7 +168,7 @@ public class ArenaListener implements Listener {
             event.setRespawnLocation(Arena.getPlayersSpectating().get(player).getCenter().clone().add(0,6,0));
         } else {
             player.setGameMode(GameMode.SURVIVAL);
-            event.setRespawnLocation(Arena.spawn());
+            event.setRespawnLocation(Arena.getSpawn());
         }
     }
 

@@ -2,9 +2,6 @@ package me.domirusz24.pk.probending.probending.arena.stages;
 
 public enum StageTeleports {
 
-
-
-
     Player1("player1", "p1"),
     Player2("player2", "p2"),
     Player3("player3", "p3"),

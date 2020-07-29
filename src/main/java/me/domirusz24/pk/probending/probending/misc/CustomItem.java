@@ -1,6 +1,6 @@
 package me.domirusz24.pk.probending.probending.misc;
 
-import me.domirusz24.pk.probending.probending.misc.Items.SpectatorLeave;
+import me.domirusz24.pk.probending.probending.misc.items.SpectatorLeave;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;

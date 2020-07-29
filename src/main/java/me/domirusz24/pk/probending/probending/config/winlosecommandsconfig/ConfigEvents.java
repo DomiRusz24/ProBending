@@ -1,6 +1,7 @@
-package me.domirusz24.pk.probending.probending.config;
+package me.domirusz24.pk.probending.probending.config.winlosecommandsconfig;
 
 import me.domirusz24.pk.probending.probending.arena.Arena;
+import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -30,13 +31,13 @@ public enum ConfigEvents {
         if (list == null || list.isEmpty()) {
             return;
         }
-        WinLoseCommands.get().set(getPath(arena), list);
-        WinLoseCommands.save();
+        ConfigManager.getWinLoseCommands().getConfig().set(getPath(arena), list);
+        ConfigManager.getWinLoseCommands().saveConfig();
     }
 
     public boolean isSet(Arena arena) {
-        WinLoseCommands.reload();
-        return WinLoseCommands.get().isSet(getPath(arena));
+        ConfigManager.getWinLoseCommands().reloadConfig();
+        return ConfigManager.getWinLoseCommands().getConfig().isSet(getPath(arena));
     }
 
     public String getPath() {
@@ -45,7 +46,7 @@ public enum ConfigEvents {
 
     public List<String> getCommands(Arena arena) {
         if (isSet(arena)) {
-            return WinLoseCommands.get().getStringList(getPath(arena));
+            return ConfigManager.getWinLoseCommands().getConfig().getStringList(getPath(arena));
         }
         return new ArrayList<>();
     }

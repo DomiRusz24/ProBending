@@ -140,18 +140,6 @@ public class Team
         return this.getTeamTag() == TeamTag.BLUE ? TeamTag.RED : TeamTag.BLUE;
     }
     
-    public PBTeamPlayer getPlayer1() {
-        return this.player1;
-    }
-    
-    public PBTeamPlayer getPlayer2() {
-        return this.player2;
-    }
-    
-    public PBTeamPlayer getPlayer3() {
-        return this.player3;
-    }
-    
     public TeamTag getTeamTag() {
         return this.teamTag;
     }

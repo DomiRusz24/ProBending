@@ -4,12 +4,8 @@ import me.domirusz24.pk.probending.probending.arena.Arena;
 import me.domirusz24.pk.probending.probending.arena.ArenaListener;
 import me.domirusz24.pk.probending.probending.arena.commands.*;
 import me.domirusz24.pk.probending.probending.arena.kit.PlayerKit;
-import me.domirusz24.pk.probending.probending.config.ArenaLocationsConfig;
-import me.domirusz24.pk.probending.probending.config.ArenaTBStagesConfig;
+import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
-import me.domirusz24.pk.probending.probending.config.WinLoseCommands;
-import me.domirusz24.pk.probending.probending.data.DataConfig;
-import me.domirusz24.pk.probending.probending.data.TeamDataConfig;
 import me.domirusz24.pk.probending.probending.misc.CustomItem;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,14 +33,12 @@ public final class ProBending extends JavaPlugin
         this.getCommand("statystyki").setExecutor(new Statistics());
         this.getCommand("kity").setExecutor(new KitsMenu());
         int i = 1;
-        ArenaLocationsConfig.setup();
-        ArenaTBStagesConfig.setup();
-        while (ArenaLocationsConfig.get().isSet("Arena.nr" + i)) {
+        ConfigManager.register();
+        while (ConfigManager.getWinLoseCommands().getConfig().isSet("Arena.nr" + i)) {
                 new Arena(ConfigMethods.getLocation("Arena.nr" + i + ".center"), String.valueOf(i), false);
                 System.out.println("Utworzono arene nr. " + i);
             i++;
         }
-        WinLoseCommands.setup();
         getConfig().addDefault("stage.y", 30);
         getConfig().addDefault("TB.raisingStages", 4);
         getConfig().addDefault("arena.tickUpdate", 5);
@@ -55,8 +49,6 @@ public final class ProBending extends JavaPlugin
         getConfig().addDefault("debug", true);
         getConfig().options().copyDefaults(true);
         PlayerKit.readKits();
-        DataConfig.setup();
-        TeamDataConfig.setup();
         saveConfig();
         ArenaListener.HpRatio = getConfig().getInt("arena.hpToTirednessRatio", 3);
         CustomItem.createItems();

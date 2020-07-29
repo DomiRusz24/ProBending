@@ -148,10 +148,10 @@ public class ArenaCreateCommand implements CommandExecutor {
                         return true;
 
                     } else if (args[0].equalsIgnoreCase("getspawn")) {
-                        if (Arena.spawn() == null) {
+                        if (Arena.getSpawn() == null) {
                             player.sendMessage(ProBending.errorPrefix + "Spawn is not set!");
                         } else {
-                            player.teleport(Arena.spawn());
+                            player.teleport(Arena.getSpawn());
                             player.sendMessage(ProBending.successPrefix + "You have been teleported!");
                         }
                         return true;

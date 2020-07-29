@@ -1,8 +1,8 @@
-package me.domirusz24.pk.probending.probending.misc.Items;
+package me.domirusz24.pk.probending.probending.misc.items;
 
 import me.domirusz24.pk.probending.probending.ProBending;
 import me.domirusz24.pk.probending.probending.arena.Arena;
-import me.domirusz24.pk.probending.probending.config.ConfigEvents;
+import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.misc.CustomItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

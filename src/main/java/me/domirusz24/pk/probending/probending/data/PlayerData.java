@@ -1,7 +1,8 @@
 package me.domirusz24.pk.probending.probending.data;
 
 import me.domirusz24.pk.probending.probending.ProBending;
-import me.domirusz24.pk.probending.probending.data.DataType.PlayerDataType;
+import me.domirusz24.pk.probending.probending.config.ConfigManager;
+import me.domirusz24.pk.probending.probending.data.datatype.PlayerDataType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -24,20 +25,20 @@ public class PlayerData {
     }
 
     public void setData(PlayerDataType data, int value) {
-        DataConfig.get().set(path + data.getName(), value);
+        ConfigManager.getWinLoseCommands().getConfig().set(path + data.getName(), value);
     }
 
     public void raiseData(PlayerDataType data, int value) {
-        DataConfig.reload();
+        ConfigManager.getWinLoseCommands().reloadConfig();
         int previous = getData(data);
         previous+= value;
-        DataConfig.get().set(path + data.getName(), previous);
-        DataConfig.save();
+        ConfigManager.getWinLoseCommands().getConfig().set(path + data.getName(), previous);
+        ConfigManager.getWinLoseCommands().saveConfig();
     }
 
     public int getData(PlayerDataType data) {
-        DataConfig.reload();
-        return DataConfig.get().getInt(path + data.getName(), 0);
+        ConfigManager.getWinLoseCommands().reloadConfig();
+        return ConfigManager.getWinLoseCommands().getConfig().getInt(path + data.getName(), 0);
     }
 
     public int getTotalGames() {

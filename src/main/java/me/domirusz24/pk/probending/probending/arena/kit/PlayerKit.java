@@ -1,7 +1,7 @@
 package me.domirusz24.pk.probending.probending.arena.kit;
 
 import me.domirusz24.pk.probending.probending.ProBending;
-import me.domirusz24.pk.probending.probending.data.DataConfig;
+import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -99,11 +99,11 @@ public class PlayerKit {
     }
 
     public void togglePlayer(Player player, boolean value) {
-        DataConfig.get().set(player.getName() + ".Kits." + getName() + ".Toggled", value ? 1 : 0);
+        ConfigManager.getDataConfig().getConfig().set(player.getName() + ".Kits." + getName() + ".Toggled", value ? 1 : 0);
     }
 
     public boolean isEnabled(Player player) {
-        return DataConfig.get().getInt(player.getName() + ".Kits." + getName() + ".Toggled") == 1;
+        return ConfigManager.getDataConfig().getConfig().getInt(player.getName() + ".Kits." + getName() + ".Toggled") == 1;
     }
 
     public void runCommands(Player player) {

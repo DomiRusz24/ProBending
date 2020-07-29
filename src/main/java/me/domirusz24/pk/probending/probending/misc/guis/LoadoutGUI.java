@@ -1,7 +1,7 @@
-package me.domirusz24.pk.probending.probending.misc.GUIS;
+package me.domirusz24.pk.probending.probending.misc.guis;
 
 import me.domirusz24.pk.probending.probending.arena.kit.PlayerKit;
-import me.domirusz24.pk.probending.probending.data.DataConfig;
+import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.misc.CustomGUI;
 import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
 import org.bukkit.ChatColor;
@@ -20,7 +20,7 @@ public class LoadoutGUI extends CustomGUI {
 
     public LoadoutGUI(Player player) {
         super(player);
-        DataConfig.reload();
+        ConfigManager.getDataConfig().reloadConfig();
         for (PlayerKit k : PlayerKit.getAvailableKits().values()) {
             if (player.hasPermission(k.getPermission())) {
                 tempBool.put(k, k.isEnabled(player));
@@ -99,6 +99,6 @@ public class LoadoutGUI extends CustomGUI {
         for (PlayerKit k : PlayerKit.getAvailableKits().values()) {
             k.togglePlayer(player, tempBool.get(k));
         }
-        DataConfig.save();
+        ConfigManager.getDataConfig().saveConfig();
     }
 }

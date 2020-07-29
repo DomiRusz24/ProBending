@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.data.DataType;
+package me.domirusz24.pk.probending.probending.data.datatype;
 
 import me.domirusz24.pk.probending.probending.ProBending;
 import org.bukkit.ChatColor;
