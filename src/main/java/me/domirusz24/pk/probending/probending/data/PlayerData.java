@@ -2,7 +2,6 @@ package me.domirusz24.pk.probending.probending.data;
 
 import me.domirusz24.pk.probending.probending.ProBending;
 import me.domirusz24.pk.probending.probending.config.ConfigManager;
-import me.domirusz24.pk.probending.probending.data.datatype.PlayerDataType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

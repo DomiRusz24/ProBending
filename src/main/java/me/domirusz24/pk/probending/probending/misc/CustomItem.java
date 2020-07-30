@@ -1,6 +1,5 @@
 package me.domirusz24.pk.probending.probending.misc;
 
-import me.domirusz24.pk.probending.probending.misc.items.SpectatorLeave;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -8,10 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 
 public abstract class CustomItem {
-    public static void createItems() {
-        new SpectatorLeave();
-    }
 
+    public static final ArrayList<CustomItem> customItems = new ArrayList<>();
 
     public static CustomItem getCustomItem(String name) {
         for (CustomItem e : customItems) {
@@ -21,9 +18,6 @@ public abstract class CustomItem {
         }
         return null;
     }
-
-
-    public static final ArrayList<CustomItem> customItems = new ArrayList<>();
 
     public CustomItem() {
         customItems.add(this);

@@ -8,7 +8,7 @@ import me.domirusz24.pk.probending.probending.arena.stages.StageEnum;
 import me.domirusz24.pk.probending.probending.arena.stages.StageTeleports;
 import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.data.PlayerData;
-import me.domirusz24.pk.probending.probending.data.datatype.PlayerDataType;
+import me.domirusz24.pk.probending.probending.data.PlayerDataType;
 import me.domirusz24.pk.probending.probending.misc.TempInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

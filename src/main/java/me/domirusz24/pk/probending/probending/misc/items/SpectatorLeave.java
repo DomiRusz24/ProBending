@@ -14,6 +14,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Collections;
 
 public class SpectatorLeave extends CustomItem {
+
+    public SpectatorLeave() {
+        super();
+    }
+
     @Override
     public ItemStack getItem() {
         ItemStack item = new ItemStack(Material.MAGMA_CREAM);
@@ -36,15 +41,11 @@ public class SpectatorLeave extends CustomItem {
             Arena.getPlayersSpectating().get(player).removeSpectator(player);
             ConfigEvents.PlayerClickLeave.run(Arena.getPlayersSpectating().get(player), player);
         } else if (Arena.playersPlaying.contains(player)) {
-            for (Arena a : Arena.Arenas) {
-                if (a.isInGame()) {
-                    if (a.getAllPlayers().contains(player)) {
-                        a.killPlayer(a.getPBPlayer(player));
-                        a.removeSpectator(player);
-                        ConfigEvents.PlayerClickLeave.run(a, player);
-                    }
-                }
-            }
+            Arena arena = Arena.getArena(player);
+            assert arena != null;
+            arena.killPlayer(arena.getPBPlayer(player));
+            arena.removeSpectator(player);
+            ConfigEvents.PlayerClickLeave.run(arena, player);
         } else {
             player.sendMessage(ProBending.errorPrefix + "Nie ogladasz, ani nie grasz!");
         }

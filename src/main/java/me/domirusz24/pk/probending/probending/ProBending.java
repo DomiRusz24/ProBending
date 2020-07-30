@@ -6,7 +6,7 @@ import me.domirusz24.pk.probending.probending.arena.commands.*;
 import me.domirusz24.pk.probending.probending.arena.kit.PlayerKit;
 import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
-import me.domirusz24.pk.probending.probending.misc.CustomItem;
+import me.domirusz24.pk.probending.probending.misc.items.SpectatorLeave;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -34,7 +34,7 @@ public final class ProBending extends JavaPlugin
         this.getCommand("kity").setExecutor(new KitsMenu());
         int i = 1;
         ConfigManager.register();
-        while (ConfigManager.getWinLoseCommands().getConfig().isSet("Arena.nr" + i)) {
+        while (ConfigManager.getArenaLocationsConfig().getConfig().isSet("Arena.nr" + i)) {
                 new Arena(ConfigMethods.getLocation("Arena.nr" + i + ".center"), String.valueOf(i), false);
                 System.out.println("Utworzono arene nr. " + i);
             i++;
@@ -51,7 +51,11 @@ public final class ProBending extends JavaPlugin
         PlayerKit.readKits();
         saveConfig();
         ArenaListener.HpRatio = getConfig().getInt("arena.hpToTirednessRatio", 3);
-        CustomItem.createItems();
+        registerItems();
+    }
+
+    private void registerItems() {
+        new SpectatorLeave();
     }
     
     public void onDisable() {

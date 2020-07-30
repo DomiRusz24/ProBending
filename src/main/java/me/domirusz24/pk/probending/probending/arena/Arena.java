@@ -16,7 +16,7 @@ import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
 import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.data.PlayerData;
-import me.domirusz24.pk.probending.probending.data.datatype.PlayerDataType;
+import me.domirusz24.pk.probending.probending.data.PlayerDataType;
 import me.domirusz24.pk.probending.probending.misc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
