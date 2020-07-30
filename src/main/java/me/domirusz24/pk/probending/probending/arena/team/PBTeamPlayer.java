@@ -8,7 +8,7 @@ import me.domirusz24.pk.probending.probending.arena.stages.StageEnum;
 import me.domirusz24.pk.probending.probending.arena.stages.StageTeleports;
 import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.data.PlayerData;
-import me.domirusz24.pk.probending.probending.data.PlayerDataType;
+import me.domirusz24.pk.probending.probending.data.PlayerDataEnum;
 import me.domirusz24.pk.probending.probending.misc.TempInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,7 +29,7 @@ public class PBTeamPlayer
     private final Arena arena;
     private TempInventory tempInventory;
     private boolean hasntGainedStageYet = false;
-    private final HashMap<PlayerDataType, Integer> tempStats = new HashMap<>();
+    private final HashMap<PlayerDataEnum, Integer> tempStats = new HashMap<>();
     private PlayerData data;
     private int tiredMeter = 0;
     private int illegalStageCombo = 0;
@@ -50,7 +50,7 @@ public class PBTeamPlayer
             this.player = BPlayer.getPlayer();
             tempInventory = new TempInventory(player);
             data = new PlayerData(player);
-            for (PlayerDataType e : PlayerDataType.values()) {
+            for (PlayerDataEnum e : PlayerDataEnum.values()) {
                 tempStats.put(e, data.getData(e));
             }
             tempInventory.remove();
@@ -85,18 +85,18 @@ public class PBTeamPlayer
         return data;
     }
 
-    public void setData(PlayerDataType type, int value) {
+    public void setData(PlayerDataEnum type, int value) {
         tempStats.put(type, value);
     }
 
-    public void raiseData(PlayerDataType type, int value) {
+    public void raiseData(PlayerDataEnum type, int value) {
         int t = tempStats.get(type);
         t+= value;
         tempStats.put(type, t);
     }
 
     public void transferData() {
-        for (PlayerDataType e : PlayerDataType.values()) {
+        for (PlayerDataEnum e : PlayerDataEnum.values()) {
             data.setData(e, tempStats.get(e));
         }
     }

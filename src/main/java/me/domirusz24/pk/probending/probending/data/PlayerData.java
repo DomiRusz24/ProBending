@@ -23,11 +23,11 @@ public class PlayerData {
         path = name + ".";
     }
 
-    public void setData(PlayerDataType data, int value) {
+    public void setData(PlayerDataEnum data, int value) {
         ConfigManager.getWinLoseCommands().getConfig().set(path + data.getName(), value);
     }
 
-    public void raiseData(PlayerDataType data, int value) {
+    public void raiseData(PlayerDataEnum data, int value) {
         ConfigManager.getWinLoseCommands().reloadConfig();
         int previous = getData(data);
         previous+= value;
@@ -35,18 +35,18 @@ public class PlayerData {
         ConfigManager.getWinLoseCommands().saveConfig();
     }
 
-    public int getData(PlayerDataType data) {
+    public int getData(PlayerDataEnum data) {
         ConfigManager.getWinLoseCommands().reloadConfig();
         return ConfigManager.getWinLoseCommands().getConfig().getInt(path + data.getName(), 0);
     }
 
     public int getTotalGames() {
-        return getData(PlayerDataType.PlayerTie) + getData(PlayerDataType.PlayerLoss) + getData(PlayerDataType.PlayerWins);
+        return getData(PlayerDataEnum.PlayerTie) + getData(PlayerDataEnum.PlayerLoss) + getData(PlayerDataEnum.PlayerWins);
     }
 
     public double getRatio() {
-        int loss = getData(PlayerDataType.PlayerLoss);
-        int win = getData(PlayerDataType.PlayerWins);
+        int loss = getData(PlayerDataEnum.PlayerLoss);
+        int win = getData(PlayerDataEnum.PlayerWins);
         if (loss == 0) {
             return win;
         }
@@ -64,7 +64,7 @@ public class PlayerData {
         l.add(ChatColor.DARK_AQUA + "" + ChatColor.STRIKETHROUGH + "---------------------------------------------");
         l.add( ChatColor.GRAY + "" + ChatColor.BOLD + "[" + ChatColor.GREEN + "" + ChatColor.BOLD + "Statystyki" + ChatColor.GRAY + "" + ChatColor.BOLD + "]");
         l.add(ProBending.arrow + ChatColor.BLUE + "" + ChatColor.BOLD + "Nick: " + ChatColor.RESET + "" + ChatColor.GRAY + name);
-        for (PlayerDataType e : PlayerDataType.values()) {
+        for (PlayerDataEnum e : PlayerDataEnum.values()) {
             l.add(e.getPolishName() + getData(e));
         }
         l.add(ProBending.arrow + ChatColor.BLUE + "" + ChatColor.BOLD + "Liczba gier: " + ChatColor.RESET + "" + ChatColor.GRAY + getTotalGames());

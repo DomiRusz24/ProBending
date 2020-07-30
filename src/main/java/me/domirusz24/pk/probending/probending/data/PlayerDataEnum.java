@@ -3,7 +3,7 @@ package me.domirusz24.pk.probending.probending.data;
 import me.domirusz24.pk.probending.probending.ProBending;
 import org.bukkit.ChatColor;
 
-public enum PlayerDataType {
+public enum PlayerDataEnum {
     PlayerDeaths("PlayerDeaths",ChatColor.BLUE + "" + ChatColor.BOLD + "Smierci: " + ChatColor.RESET + ""),
     PlayerKills("PlayerKills", ChatColor.BLUE + "" + ChatColor.BOLD + "Zabojstwa: " + ChatColor.RESET + ""),
     PlayerWins("PlayerWins", ChatColor.BLUE + "" + ChatColor.BOLD + "Wygrane rundy: " + ChatColor.RESET + ""),
@@ -15,7 +15,7 @@ public enum PlayerDataType {
     private final String name;
     private final String polishname;
 
-    PlayerDataType(String name, String polish) {
+    PlayerDataEnum(String name, String polish) {
         this.name = name;
         this.polishname = polish;
     }

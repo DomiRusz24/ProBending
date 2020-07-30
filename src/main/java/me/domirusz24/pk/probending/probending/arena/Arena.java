@@ -16,7 +16,7 @@ import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
 import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.data.PlayerData;
-import me.domirusz24.pk.probending.probending.data.PlayerDataType;
+import me.domirusz24.pk.probending.probending.data.PlayerDataEnum;
 import me.domirusz24.pk.probending.probending.misc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -437,15 +437,15 @@ public class Arena {
                     if (getTeamByTag(teamTag).getPlayers() != null) {
                         ConfigEvents.ArenaWin.run(this, getTeamByTag(teamTag).getPlayers());
                         for (PBTeamPlayer e : getTeamByTag(teamTag).getPBPlayers()) {
-                            e.raiseData(PlayerDataType.PlayerWins, 1);
-                            e.raiseData(PlayerDataType.WinStreak, 1);
+                            e.raiseData(PlayerDataEnum.PlayerWins, 1);
+                            e.raiseData(PlayerDataEnum.WinStreak, 1);
                         }
                     }
                     if (getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPlayers() != null) {
                         ConfigEvents.ArenaLose.run(this, getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPlayers());
                         for (PBTeamPlayer e : getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPBPlayers()) {
-                            e.raiseData(PlayerDataType.PlayerLoss, 1);
-                            e.setData(PlayerDataType.WinStreak, 0);
+                            e.raiseData(PlayerDataEnum.PlayerLoss, 1);
+                            e.setData(PlayerDataEnum.WinStreak, 0);
                         }
                     }
                 } else {
@@ -453,7 +453,7 @@ public class Arena {
                     broadcastTitleSpectatorsOnly(ChatColor.DARK_GREEN + "Koniec gry!", ChatColor.WHITE + "Gra zostala zakonczona remisem!", 10, 60, 10);
                     ConfigEvents.ArenaLose.run(this);
                     ConfigEvents.ArenaWin.run(this);
-                    getAllPBPlayers().forEach(e -> e.raiseData(PlayerDataType.PlayerTie, 1));
+                    getAllPBPlayers().forEach(e -> e.raiseData(PlayerDataEnum.PlayerTie, 1));
                 }
                 for (PBTeamPlayer player : this.getAllPBPlayers()) {
                     if (player == null) {
@@ -780,10 +780,10 @@ public class Arena {
         if (checkForEmptyStage(player.getStage() - 1, player.getTeam().getTeamTag())) {
             claimStage(player.getTeam().getEnemyTeamTag());
         }
-        player.raiseData(PlayerDataType.PlayerDeaths, 1);
+        player.raiseData(PlayerDataEnum.PlayerDeaths, 1);
         Player killer = ArenaListener.lastDamage.get(player.getPlayer());
         if (killer != null) {
-            getPBPlayer(killer).raiseData(PlayerDataType.PlayerKills, 1);
+            getPBPlayer(killer).raiseData(PlayerDataEnum.PlayerKills, 1);
         }
         player.revertInventory();
         ConfigEvents.PlayerDeath.run(this, player.getPlayer());
@@ -1045,7 +1045,7 @@ public class Arena {
                             // Lose Stage
                         } else if (player.belowStage(player.getStage(), false)) {
                             if (isInTieBreaker()) {
-                                (new PlayerData(team.getTeamTag().equals(TeamTag.BLUE) ? tieBreakerPlayerRed.getPlayer() : tieBreakerPlayerBlue.getPlayer())).raiseData(PlayerDataType.WonTieBreakerRounds, 1);
+                                (new PlayerData(team.getTeamTag().equals(TeamTag.BLUE) ? tieBreakerPlayerRed.getPlayer() : tieBreakerPlayerBlue.getPlayer())).raiseData(PlayerDataEnum.WonTieBreakerRounds, 1);
                                 stopGame(team.getEnemyTeamTag());
                                 return;
                             } else if (teamGainingStage != null) {
