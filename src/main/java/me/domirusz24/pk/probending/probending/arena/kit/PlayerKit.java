@@ -57,6 +57,14 @@ public class PlayerKit {
         this.commands = commands;
     }
 
+    public static void getKits(Player player) {
+        for (PlayerKit kit : availableKits.values()) {
+            if (player.hasPermission(kit.getPermission())) {
+                kit.runCommands(player);
+            }
+        }
+    }
+
     public static HashMap<ItemStack, PlayerKit> getAvailableKits() {
         return availableKits;
     }

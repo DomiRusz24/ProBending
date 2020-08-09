@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.misc.items;
+package me.domirusz24.pk.probending.probending.misc.customitems;
 
 import me.domirusz24.pk.probending.probending.ProBending;
 import me.domirusz24.pk.probending.probending.arena.Arena;
@@ -13,9 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
 
-public class SpectatorLeave extends CustomItem {
+public class SpectatorLeaveItem extends CustomItem {
 
-    public SpectatorLeave() {
+    public SpectatorLeaveItem() {
         super();
     }
 
@@ -39,7 +39,6 @@ public class SpectatorLeave extends CustomItem {
     public void onClick(Player player, Action action) {
         if (Arena.getPlayersSpectating().containsKey(player)) {
             Arena.getPlayersSpectating().get(player).removeSpectator(player);
-            ConfigEvents.PlayerClickLeave.run(Arena.getPlayersSpectating().get(player), player);
         } else if (Arena.playersPlaying.contains(player)) {
             Arena arena = Arena.getArena(player);
             assert arena != null;

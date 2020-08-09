@@ -17,7 +17,9 @@ import me.domirusz24.pk.probending.probending.config.ConfigMethods;
 import me.domirusz24.pk.probending.probending.config.winlosecommandsconfig.ConfigEvents;
 import me.domirusz24.pk.probending.probending.data.PlayerData;
 import me.domirusz24.pk.probending.probending.data.PlayerDataEnum;
-import me.domirusz24.pk.probending.probending.misc.*;
+import me.domirusz24.pk.probending.probending.misc.CountDown;
+import me.domirusz24.pk.probending.probending.misc.CustomScoreboard;
+import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -100,7 +102,6 @@ public class Arena {
     public static final ArrayList<Arena> Arenas = new ArrayList<>();
     public static final ArrayList<Player> playersPlaying = new ArrayList<>();
     private static final HashMap<Player, Arena> playersSpectating = new HashMap<>();
-    private static final HashMap<Player, TempInventory> tempInventories = new HashMap<>();
     private final ArrayList<Player> spectators = new ArrayList<>();
 
     //----------------
@@ -508,18 +509,14 @@ public class Arena {
                 player.getPlayer().teleport(this.stages.get(player.getStageAbsolute()).getTeleportByNumber(player.getTeam().getPBPlayerNumber(player)));
                 ArenaListener.freezePlayers.add(player.getPlayer());
                 player.getPlayer().getInventory().clear();
-                for (PlayerKit e : PlayerKit.getAvailableKits().values()) {
-                    if (e.isEnabled(player.getPlayer())) {
-                        e.runCommands(player.getPlayer());
-                    }
-                }
+                PlayerKit.getKits(player.getPlayer());
                 player.getPlayer().setHealth(20);
                 player.getBPlayer().blockChi();
                 player.getPlayer().getActivePotionEffects().forEach(e -> player.getPlayer().removePotionEffect(e.getType()));
-                player.getPlayer().setFlySpeed(1);
-                player.getPlayer().setWalkSpeed(1);
+                player.getPlayer().setWalkSpeed(0.2f);
+                PlayerKit.getKits(player.getPlayer());
+
                 player.setTiredMeter(0);
-                CustomItem.getCustomItem("arena_leave").givePlayer(player.getPlayer(), 8);
             }
         }
         hologramManager.refreshInfo();
@@ -533,7 +530,6 @@ public class Arena {
                     continue;
                 }
                 Player player = pbTeamPlayer.getPlayer();
-                CustomItem.getCustomItem("arena_leave").removePlayer(player);
                 while (ArenaListener.freezePlayers.remove(player)) {
                 }
                 pbTeamPlayer.getBPlayer().unblockChi();
@@ -680,17 +676,12 @@ public class Arena {
         inTieBreaker = true;
         tieBreakerPlayerRed.setInTieBreaker(true);
         tieBreakerPlayerBlue.setInTieBreaker(true);
+        tieBreakerPlayerRed.getPlayer().getInventory().clear();
+        tieBreakerPlayerBlue.getPlayer().getInventory().clear();
+        PlayerKit.getKits(tieBreakerPlayerBlue.getPlayer());
+        PlayerKit.getKits(tieBreakerPlayerRed.getPlayer());
         tieBreakerPlayerRed.setStage(5);
         tieBreakerPlayerBlue.setStage(6);
-        for (PlayerKit e : PlayerKit.getAvailableKits().values()) {
-            if (e.isEnabled(tieBreakerPlayerBlue.getPlayer())) {
-                e.runCommands(tieBreakerPlayerBlue.getPlayer());
-            }
-            if (e.isEnabled(tieBreakerPlayerRed.getPlayer())) {
-                e.runCommands(tieBreakerPlayerRed.getPlayer());
-            }
-        }
-
         for (PBTeamPlayer p : getAllPBPlayers()) {
             if (!p.isKilled() && !p.isInTieBreaker()) {
                 while (ArenaListener.freezePlayers.remove(p.getPlayer())) {
@@ -785,7 +776,6 @@ public class Arena {
         if (killer != null) {
             getPBPlayer(killer).raiseData(PlayerDataEnum.PlayerKills, 1);
         }
-        player.revertInventory();
         ConfigEvents.PlayerDeath.run(this, player.getPlayer());
         player.getBPlayer().unblockChi();
         player.getPlayer().getWorld().strikeLightningEffect(player.getPlayer().getLocation());
@@ -814,13 +804,10 @@ public class Arena {
         }
         while(ArenaListener.freezePlayers.remove(player.getPlayer())) {
         }
-        for (Player p : spectators) {
-            player.getPlayer().showPlayer(p);
-        }
         player.revertInventory();
-        ConfigManager.getWinLoseCommands().reloadConfig();
+        ConfigManager.getDataConfig().reloadConfig();
         player.transferData();
-        ConfigManager.getWinLoseCommands().saveConfig();
+        ConfigManager.getDataConfig().saveConfig();
         player.getBPlayer().unblockChi();
         player.setInTieBreaker(false);
         player.setInGame(false);
@@ -855,7 +842,6 @@ public class Arena {
                 p.showPlayer(player);
             }
             BendingPlayer.getBendingPlayer(player).unblockChi();
-            tempInventories.get(player).revert();
             player.getPlayer().setCollidable(true);
             this.spectators.remove(player);
             Arena.playersSpectating.remove(player);
@@ -886,23 +872,14 @@ public class Arena {
         BendingPlayer.getBendingPlayer(player).blockChi();
         while(ArenaListener.freezePlayers.remove(player)) {
         }
+        for (Player p : getAllPlayers()) {
+            p.hidePlayer(player);
+        }
         this.spectators.add(player);
         Arena.playersSpectating.put(player, this);
-        for (Player p : spectators) {
-            player.getPlayer().showPlayer(p);
-        }
-        for (PBTeamPlayer p : getAllPBPlayers()) {
-            if (!p.isKilled()) {
-                p.getPlayer().hidePlayer(player);
-            }
-        }
         player.setGameMode(GameMode.SPECTATOR);
         player.getPlayer().setCollidable(false);
         player.getPlayer().setAllowFlight(true);
-        TempInventory temp = new TempInventory(player);
-        temp.remove();
-        tempInventories.put(player, temp);
-        CustomItem.getCustomItem("arena_leave").givePlayer(player, 8);
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.misc.guis;
+package me.domirusz24.pk.probending.probending.misc.customguis;
 
 import me.domirusz24.pk.probending.probending.arena.Arena;
 import me.domirusz24.pk.probending.probending.misc.CustomGUI;

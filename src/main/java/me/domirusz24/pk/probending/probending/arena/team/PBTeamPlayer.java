@@ -48,13 +48,12 @@ public class PBTeamPlayer
         } else {
             this.BPlayer = BPlayer;
             this.player = BPlayer.getPlayer();
-            tempInventory = new TempInventory(player);
             data = new PlayerData(player);
             for (PlayerDataEnum e : PlayerDataEnum.values()) {
                 tempStats.put(e, data.getData(e));
             }
+            tempInventory = new TempInventory(player);
             tempInventory.remove();
-
         }
         this.ID = team.getPBPlayerNumber(this);
         this.team = team;
@@ -71,6 +70,10 @@ public class PBTeamPlayer
             return null;
         }
         return this.player;
+    }
+
+    public void revertInventory() {
+        tempInventory.revert();
     }
 
     public void setPlayerToNull() {
@@ -315,10 +318,6 @@ public class PBTeamPlayer
 
     public Arena getArena() {
         return arena;
-    }
-
-    public void revertInventory() {
-        tempInventory.revert();
     }
 
     public boolean isInTieBreaker() {

@@ -1,4 +1,4 @@
-package me.domirusz24.pk.probending.probending.misc.guis;
+package me.domirusz24.pk.probending.probending.misc.customguis;
 
 import me.domirusz24.pk.probending.probending.arena.kit.PlayerKit;
 import me.domirusz24.pk.probending.probending.config.ConfigManager;
@@ -16,9 +16,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class LoadoutGUI extends CustomGUI {
+public class KitGUI extends CustomGUI {
 
-    public LoadoutGUI(Player player) {
+    public KitGUI(Player player) {
         super(player);
         ConfigManager.getDataConfig().reloadConfig();
         for (PlayerKit k : PlayerKit.getAvailableKits().values()) {

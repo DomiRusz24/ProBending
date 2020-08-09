@@ -6,7 +6,7 @@ import me.domirusz24.pk.probending.probending.arena.commands.*;
 import me.domirusz24.pk.probending.probending.arena.kit.PlayerKit;
 import me.domirusz24.pk.probending.probending.config.ConfigManager;
 import me.domirusz24.pk.probending.probending.config.ConfigMethods;
-import me.domirusz24.pk.probending.probending.misc.items.SpectatorLeave;
+import me.domirusz24.pk.probending.probending.misc.customitems.SpectatorLeaveItem;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -46,6 +46,7 @@ public final class ProBending extends JavaPlugin
         getConfig().addDefault("arena.tieBreakerRound", 4800);
         getConfig().addDefault("arena.roundTime", 12000);
         getConfig().addDefault("arena.hpToTirednessRatio", 3);
+        getConfig().addDefault("player.keepInventory", true);
         getConfig().addDefault("debug", true);
         getConfig().options().copyDefaults(true);
         PlayerKit.readKits();
@@ -55,7 +56,7 @@ public final class ProBending extends JavaPlugin
     }
 
     private void registerItems() {
-        new SpectatorLeave();
+        new SpectatorLeaveItem();
     }
     
     public void onDisable() {

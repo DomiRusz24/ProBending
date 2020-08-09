@@ -49,7 +49,13 @@ public class GeneralMethods {
         }
         for (Player player : ProBending.plugin.getServer().getOnlinePlayers()) {
             if (player.getLocation().getWorld().equals(min.getWorld())) {
-                if (player.getLocation().toVector().isInAABB(new Vector(x1, y1, z1), new Vector(x2, y2, z2))) p.add(player);
+                Location loc = player.getLocation();
+                double x = loc.getBlockX();
+                double y = loc.getBlockY();
+                double z = loc.getBlockZ();
+                if (x >= x1 && x2 >= x && y >= y1 && y2 >= y && z >= z1 && z2 >= z) {
+                    p.add(player);
+                }
             }
         }
           return p;

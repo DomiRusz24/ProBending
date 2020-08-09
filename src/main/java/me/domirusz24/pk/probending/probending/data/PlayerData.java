@@ -24,20 +24,20 @@ public class PlayerData {
     }
 
     public void setData(PlayerDataEnum data, int value) {
-        ConfigManager.getWinLoseCommands().getConfig().set(path + data.getName(), value);
+        ConfigManager.getDataConfig().getConfig().set(path + data.getName(), value);
     }
 
     public void raiseData(PlayerDataEnum data, int value) {
-        ConfigManager.getWinLoseCommands().reloadConfig();
+        ConfigManager.getDataConfig().reloadConfig();
         int previous = getData(data);
         previous+= value;
-        ConfigManager.getWinLoseCommands().getConfig().set(path + data.getName(), previous);
-        ConfigManager.getWinLoseCommands().saveConfig();
+        ConfigManager.getDataConfig().getConfig().set(path + data.getName(), previous);
+        ConfigManager.getDataConfig().saveConfig();
     }
 
     public int getData(PlayerDataEnum data) {
-        ConfigManager.getWinLoseCommands().reloadConfig();
-        return ConfigManager.getWinLoseCommands().getConfig().getInt(path + data.getName(), 0);
+        ConfigManager.getDataConfig().reloadConfig();
+        return ConfigManager.getDataConfig().getConfig().getInt(path + data.getName(), 0);
     }
 
     public int getTotalGames() {

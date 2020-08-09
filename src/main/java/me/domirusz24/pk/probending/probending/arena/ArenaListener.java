@@ -5,7 +5,7 @@ import me.domirusz24.pk.probending.probending.arena.misc.ListHologram;
 import me.domirusz24.pk.probending.probending.arena.team.TempTeam;
 import me.domirusz24.pk.probending.probending.misc.CustomGUI;
 import me.domirusz24.pk.probending.probending.misc.CustomItem;
-import me.domirusz24.pk.probending.probending.misc.guis.SpectatorGUI;
+import me.domirusz24.pk.probending.probending.misc.customguis.SpectatorGUI;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
