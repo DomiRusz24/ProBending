@@ -20,6 +20,7 @@ import me.domirusz24.pk.probending.probending.data.PlayerDataEnum;
 import me.domirusz24.pk.probending.probending.misc.CountDown;
 import me.domirusz24.pk.probending.probending.misc.CustomScoreboard;
 import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
+import me.domirusz24.pk.probending.probending.misc.customitems.CustomItems;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -405,7 +406,7 @@ public class Arena {
                         continue;
                     }
                     Arena.playersPlaying.remove(player.getPlayer());
-                    ArenaListener.freezePlayers.remove(player.getPlayer());
+                    ArenaListener.unFreezePlayer(player.getPlayer());
                     System.out.println("Usunieto z gry playera " + player.getPlayer().getName());
                     this.removePlayer(this.getPBPlayer(player.getPlayer()));
                 }
@@ -464,7 +465,7 @@ public class Arena {
                         continue;
                     }
                     Arena.playersPlaying.remove(player.getPlayer());
-                    ArenaListener.freezePlayers.remove(player.getPlayer());
+                    ArenaListener.unFreezePlayer(player.getPlayer());
                     System.out.println("Usunieto z gry playera " + player.getPlayer().getName());
                     this.removePlayer(this.getPBPlayer(player.getPlayer()));
                 }
@@ -490,7 +491,6 @@ public class Arena {
 
     // Round manager
 
-    @SuppressWarnings("ConstantConditions")
     private void nextRound() {
         if (!this.inGame) {
             this.stopGame();
@@ -507,15 +507,13 @@ public class Arena {
             if (!player.isKilled()) {
                 player.setStage(StageEnum.convertID(4, player.getTeam().getTeamTag()));
                 player.getPlayer().teleport(this.stages.get(player.getStageAbsolute()).getTeleportByNumber(player.getTeam().getPBPlayerNumber(player)));
-                ArenaListener.freezePlayers.add(player.getPlayer());
-                player.getPlayer().getInventory().clear();
-                PlayerKit.getKits(player.getPlayer());
+                ArenaListener.freezePlayer(player.getPlayer());
                 player.getPlayer().setHealth(20);
                 player.getBPlayer().blockChi();
                 player.getPlayer().getActivePotionEffects().forEach(e -> player.getPlayer().removePotionEffect(e.getType()));
                 player.getPlayer().setWalkSpeed(0.2f);
-                PlayerKit.getKits(player.getPlayer());
-
+                player.getPlayer().getInventory().clear();
+                CustomItems.SpectatorLeave.getItem().givePlayer(player.getPlayer(), 8);
                 player.setTiredMeter(0);
             }
         }
@@ -530,9 +528,10 @@ public class Arena {
                     continue;
                 }
                 Player player = pbTeamPlayer.getPlayer();
-                while (ArenaListener.freezePlayers.remove(player)) {
-                }
+                ArenaListener.unFreezePlayer(player);
                 pbTeamPlayer.getBPlayer().unblockChi();
+                player.getInventory().clear();
+                PlayerKit.getKits(player);
             }
             runChecker();
         }, 40, true, this).run(getAllPlayersAndSpectators());
@@ -555,7 +554,7 @@ public class Arena {
             }
             if (!player.isKilled()) {
                 player.getBPlayer().blockChi();
-                ArenaListener.freezePlayers.add(player.getPlayer());
+                ArenaListener.freezePlayer(player.getPlayer());
                 player.getPlayer().setHealth(20);
             }
         }
@@ -684,8 +683,7 @@ public class Arena {
         tieBreakerPlayerBlue.setStage(6);
         for (PBTeamPlayer p : getAllPBPlayers()) {
             if (!p.isKilled() && !p.isInTieBreaker()) {
-                while (ArenaListener.freezePlayers.remove(p.getPlayer())) {
-                }
+                ArenaListener.unFreezePlayer(p.getPlayer());
                 this.addSpectator(p.getPlayer(), true);
             } else if (p.isInTieBreaker()) {
                 p.getPlayer().teleport(stages.get(p.getStageAbsolute()).getCenter());
@@ -696,8 +694,6 @@ public class Arena {
         new BukkitRunnable() {
             boolean moreStages = true;
             int i = 10;
-
-            @SuppressWarnings("StatementWithEmptyBody")
             public void run() {
                 if (!inGame) {
                     cancel();
@@ -716,10 +712,8 @@ public class Arena {
                     }
                 } else {
                     moreStages = false;
-                    while (ArenaListener.freezePlayers.remove(tieBreakerPlayerBlue.getPlayer())) {
-                    }
-                    while (ArenaListener.freezePlayers.remove(tieBreakerPlayerRed.getPlayer())) {
-                    }
+                    ArenaListener.unFreezePlayer(tieBreakerPlayerBlue.getPlayer());
+                    ArenaListener.unFreezePlayer(tieBreakerPlayerRed.getPlayer());
                     tieBreakerPlayerRed.getBPlayer().unblockChi();
                     tieBreakerPlayerBlue.getBPlayer().unblockChi();
                     instance.runChecker();
@@ -764,8 +758,7 @@ public class Arena {
         if (player.isKilled()) {
             return;
         }
-        while(ArenaListener.freezePlayers.remove(player.getPlayer())) {
-        }
+        ArenaListener.unFreezePlayer(player.getPlayer());
         player.setInTieBreaker(false);
         player.setKilled(true);
         if (checkForEmptyStage(player.getStage() - 1, player.getTeam().getTeamTag())) {
@@ -802,8 +795,7 @@ public class Arena {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
             player.getPlayer().teleport(Arena.getSpawn());
         }
-        while(ArenaListener.freezePlayers.remove(player.getPlayer())) {
-        }
+        ArenaListener.unFreezePlayer(player.getPlayer());
         player.revertInventory();
         ConfigManager.getDataConfig().reloadConfig();
         player.transferData();
@@ -836,8 +828,7 @@ public class Arena {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
             player.getPlayer().setAllowFlight(false);
             player.getPlayer().teleport(Arena.getSpawn());
-            while(ArenaListener.freezePlayers.remove(player)) {
-            }
+            ArenaListener.unFreezePlayer(player);
             for (Player p : getAllPlayers()) {
                 p.showPlayer(player);
             }
@@ -870,8 +861,7 @@ public class Arena {
         ConfigEvents.PlayerJoinSpectate.run(this, player);
         scoreboard.addPlayer(player);
         BendingPlayer.getBendingPlayer(player).blockChi();
-        while(ArenaListener.freezePlayers.remove(player)) {
-        }
+        ArenaListener.unFreezePlayer(player);
         for (Player p : getAllPlayers()) {
             p.hidePlayer(player);
         }

@@ -26,18 +26,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ArenaListener implements Listener {
-    public static final ArrayList<Player> freezePlayers = new ArrayList<>();
+    private static final HashMap<String, Boolean> freezePlayers = new HashMap<>();
+
+    public static void freezePlayer(Player player) {
+        freezePlayers.put(player.getUniqueId().toString(), true);
+    }
+
+    public static void unFreezePlayer(Player player) {
+        freezePlayers.remove(player.getUniqueId().toString());
+    }
+
+
+
     public static final HashMap<Player, Boolean> playerDeathStatus = new HashMap<>();
     public static final HashMap<Player, Player> lastDamage = new HashMap<>();
     public static int HpRatio;
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (ArenaListener.freezePlayers.contains(event.getPlayer())) {
+        if (ArenaListener.freezePlayers.containsKey(event.getPlayer().getUniqueId().toString())) {
             event.setCancelled(true);
         }
     }

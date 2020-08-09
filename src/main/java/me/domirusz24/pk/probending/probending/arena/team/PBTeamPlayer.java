@@ -177,15 +177,12 @@ public class PBTeamPlayer
     }
 
     public void setTiredMeter(int value) {
-        this.tiredMeter = value;
-        if (value > 300) {
-            tiredMeter = 300;
-        }
+        this.tiredMeter = Math.min(value, 300);
     }
 
     public void increaseTiredMeter(int value) {
         this.tiredMeter+= value;
-        if (value > 300) {
+        if (tiredMeter > 300) {
             tiredMeter = 300;
         }
         arena.updateScoreboard();

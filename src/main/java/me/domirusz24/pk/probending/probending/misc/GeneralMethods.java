@@ -93,20 +93,14 @@ public class GeneralMethods {
         for (int i = 0; i <= 9; i++) {
             Ability ab = CoreAbility.getAbility(player.getAbilities().get(i));
             if (ab != null) {
-                Element eleab = ab.getElement() instanceof Element.SubElement ? ((Element.SubElement) ab.getElement()).getParentElement() : ab.getElement();
-                if (!Elements.getValidElements().contains(eleab)) {
-                    return Elements.Illegal;
-                }
-                if (e == null) {
-                    e = eleab;
-                } else if (e != eleab) {
-                    return null;
-                }
+                Element eleab = ab.getElement() instanceof Element.SubElement ?
+                        ((Element.SubElement) ab.getElement()).getParentElement()
+                        : ab.getElement();
+                if (!Elements.getValidElements().contains(eleab)) return Elements.Illegal;
+                if (e == null) e = eleab; else if (e != eleab) return null;
             }
         }
-        if (e == null) {
-            return Elements.NonBender;
-        }
+        if (e == null) return Elements.NonBender;
         return Elements.getElement(e);
     }
 
