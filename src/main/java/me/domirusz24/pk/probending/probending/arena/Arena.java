@@ -21,6 +21,7 @@ import me.domirusz24.pk.probending.probending.misc.CountDown;
 import me.domirusz24.pk.probending.probending.misc.CustomScoreboard;
 import me.domirusz24.pk.probending.probending.misc.GeneralMethods;
 import me.domirusz24.pk.probending.probending.misc.customitems.CustomItems;
+import me.domirusz24.pk.probending.probending.misc.customsigns.TeamStartSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -31,6 +32,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Arena {
@@ -101,9 +104,9 @@ public class Arena {
 
 
     public static final ArrayList<Arena> Arenas = new ArrayList<>();
-    public static final ArrayList<Player> playersPlaying = new ArrayList<>();
+    public static final HashSet<Player> playersPlaying = new HashSet<>();
     private static final HashMap<Player, Arena> playersSpectating = new HashMap<>();
-    private final ArrayList<Player> spectators = new ArrayList<>();
+    private final HashSet<Player> spectators = new HashSet<>();
 
     //----------------
 
@@ -134,12 +137,18 @@ public class Arena {
 
     public final TempTeam blueTempTeam;
     public final TempTeam redTempTeam;
+    public final TeamStartSign blueSign;
+    public final TeamStartSign redSign;
+
+    private Team TeamBlue = null;
+    private Team TeamRed = null;
+
+    //---
+
     private boolean inGame;
     private Arena instance;
     private final HashMap<Integer, Stage> stages;
     private int roundTimeCounter = 0;
-    private Team TeamBlue = null;
-    private Team TeamRed = null;
     private final String ID;
     private int roundNumber;
     private TeamTag teamGainingStage = null;
@@ -164,6 +173,8 @@ public class Arena {
         this.redTempTeam = new TempTeam();
         this.getter = new ArenaGetter(this);
         scoreboard = new CustomScoreboard("Arena" + ID, ChatColor.BOLD + "" + ChatColor.GRAY + "Info o grze:", DisplaySlot.SIDEBAR);
+        redSign = new TeamStartSign(this, TeamTag.RED);
+        blueSign = new TeamStartSign(this, TeamTag.BLUE);
         this.setUpArena();
     }
 
@@ -180,6 +191,8 @@ public class Arena {
         this.redTempTeam = new TempTeam();
         this.getter = new ArenaGetter(this);
         scoreboard = new CustomScoreboard("Arena" + ID, ChatColor.BOLD + "" + ChatColor.GRAY + "Info o grze:", DisplaySlot.SIDEBAR);
+        redSign = new TeamStartSign(this, TeamTag.RED);
+        blueSign = new TeamStartSign(this, TeamTag.BLUE);
         this.setUpArena();
     }
 
@@ -398,22 +411,8 @@ public class Arena {
             if (getAllPBPlayers() != null && !getAllPBPlayers().isEmpty()) {
                 broadcastTitle(ChatColor.DARK_RED + "Koniec gry!", "", 10, 60, 10);
                 broadcastTitleSpectatorsOnly(ChatColor.DARK_RED + "Koniec gry!", "", 10, 60, 10);
-                for (PBTeamPlayer player : this.getAllPBPlayers()) {
-                    if (player == null) {
-                        continue;
-                    }
-                    if (player.getPlayer() == null) {
-                        continue;
-                    }
-                    Arena.playersPlaying.remove(player.getPlayer());
-                    ArenaListener.unFreezePlayer(player.getPlayer());
-                    System.out.println("Usunieto z gry playera " + player.getPlayer().getName());
-                    this.removePlayer(this.getPBPlayer(player.getPlayer()));
-                }
             }
-            for (Player player : new ArrayList<>(spectators)) {
-                removeSpectator(player);
-            }
+            removeAllPlayers();
             this.deleteTBArena();
             this.inGame = false;
             this.tieBreakerPlayerBlue = null;
@@ -436,16 +435,18 @@ public class Arena {
                 if (teamTag != null) {
                     broadcastTitle(ChatColor.DARK_GREEN + "Koniec gry!", getTeamByTag(teamTag).getColor() + "Wygrala druzyna " + getTeamByTag(teamTag).getPolishName() + "!", 10, 60, 10);
                     broadcastTitleSpectatorsOnly(ChatColor.DARK_GREEN + "Koniec gry!", getTeamByTag(teamTag).getColor() + "Wygrala druzyna " + getTeamByTag(teamTag).getPolishName() + "!", 10, 60, 10);
+                    ConfigEvents.ArenaWin.run(this);
+                    ConfigEvents.ArenaLose.run(this);
                     if (getTeamByTag(teamTag).getPlayers() != null) {
-                        ConfigEvents.ArenaWin.run(this, getTeamByTag(teamTag).getPlayers());
                         for (PBTeamPlayer e : getTeamByTag(teamTag).getPBPlayers()) {
+                            ConfigEvents.ArenaWin.runPlayerOnly(this, e.getPlayer());
                             e.raiseData(PlayerDataEnum.PlayerWins, 1);
                             e.raiseData(PlayerDataEnum.WinStreak, 1);
                         }
                     }
                     if (getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPlayers() != null) {
-                        ConfigEvents.ArenaLose.run(this, getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPlayers());
                         for (PBTeamPlayer e : getTeamByTag(getTeamByTag(teamTag).getEnemyTeamTag()).getPBPlayers()) {
+                            ConfigEvents.ArenaLose.runPlayerOnly(this, e.getPlayer());
                             e.raiseData(PlayerDataEnum.PlayerLoss, 1);
                             e.setData(PlayerDataEnum.WinStreak, 0);
                         }
@@ -457,22 +458,8 @@ public class Arena {
                     ConfigEvents.ArenaWin.run(this);
                     getAllPBPlayers().forEach(e -> e.raiseData(PlayerDataEnum.PlayerTie, 1));
                 }
-                for (PBTeamPlayer player : this.getAllPBPlayers()) {
-                    if (player == null) {
-                        continue;
-                    }
-                    if (player.getPlayer() == null) {
-                        continue;
-                    }
-                    Arena.playersPlaying.remove(player.getPlayer());
-                    ArenaListener.unFreezePlayer(player.getPlayer());
-                    System.out.println("Usunieto z gry playera " + player.getPlayer().getName());
-                    this.removePlayer(this.getPBPlayer(player.getPlayer()));
-                }
             }
-            for (Player player : new ArrayList<>(spectators)) {
-                removeSpectator(player);
-            }
+            removeAllPlayers();
             this.deleteTBArena();
             this.inGame = false;
             this.tieBreakerPlayerBlue = null;
@@ -484,7 +471,6 @@ public class Arena {
             this.TeamBlue = null;
             ArenaCreateCommand.getRollBack(null, getID());
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "wylaczarena " + getID());
-            hologramManager.refreshInfo();
             ListHologram.update();
         }
     }
@@ -659,16 +645,26 @@ public class Arena {
             return;
         }
         roundNumber++;
-        int redPlayerNumber;
-        int bluePlayerNumber;
-        do {
-            redPlayerNumber = (int) (Math.random() * ((getTeamRed().getPBPlayers().size() - 1) + 1)) + 1;
+        Random r = new Random();
+        int redPlayerNumber = r.nextInt(2) + 1;
+        int bluePlayerNumber = r.nextInt(2) + 1;
+        tieBreakerPlayerRed = TeamRed.getPBPlayer(redPlayerNumber);
+        while (tieBreakerPlayerRed == null || tieBreakerPlayerRed.getPlayer() == null || !tieBreakerPlayerRed.isKilled()) {
+            if (redPlayerNumber == 3) {
+                redPlayerNumber = 1;
+            } else {
+                redPlayerNumber++;
+            }
             tieBreakerPlayerRed = TeamRed.getPBPlayer(redPlayerNumber);
-        } while (tieBreakerPlayerRed == null || tieBreakerPlayerRed.getPlayer() == null);
-        do {
-            bluePlayerNumber = (int) (Math.random() * ((getTeamBlue().getPBPlayers().size() - 1) + 1)) + 1;
+        }
+        while (tieBreakerPlayerBlue == null || tieBreakerPlayerBlue.getPlayer() == null || !tieBreakerPlayerBlue.isKilled()) {
+            if (bluePlayerNumber == 3) {
+                bluePlayerNumber = 1;
+            } else {
+                bluePlayerNumber++;
+            }
             tieBreakerPlayerBlue = TeamBlue.getPBPlayer(bluePlayerNumber);
-        } while (tieBreakerPlayerBlue == null || tieBreakerPlayerBlue.getPlayer() == null);
+        }
 
         broadcastTitle(ChatColor.BOLD + "" + ChatColor.GREEN + "Wybrano playerow: ", tieBreakerPlayerRed.getTeamName() + " i " + tieBreakerPlayerBlue.getTeamName() + "!", 5, 40, 5);
         broadcastTitleSpectatorsOnly(ChatColor.BOLD + "" + ChatColor.GREEN + "Wybrano playerow: ", tieBreakerPlayerRed.getTeamName() + " i " + tieBreakerPlayerBlue.getTeamName() + "!", 5, 40, 5);
@@ -829,10 +825,7 @@ public class Arena {
             player.getPlayer().setAllowFlight(false);
             player.getPlayer().teleport(Arena.getSpawn());
             ArenaListener.unFreezePlayer(player);
-            for (Player p : getAllPlayers()) {
-                p.showPlayer(player);
-            }
-            BendingPlayer.getBendingPlayer(player).unblockChi();
+            if (BendingPlayer.getBendingPlayer(player) != null) BendingPlayer.getBendingPlayer(player).unblockChi();
             player.getPlayer().setCollidable(true);
             this.spectators.remove(player);
             Arena.playersSpectating.remove(player);
@@ -860,11 +853,8 @@ public class Arena {
         player.teleport(t);
         ConfigEvents.PlayerJoinSpectate.run(this, player);
         scoreboard.addPlayer(player);
-        BendingPlayer.getBendingPlayer(player).blockChi();
+        if (BendingPlayer.getBendingPlayer(player) != null) BendingPlayer.getBendingPlayer(player).blockChi();
         ArenaListener.unFreezePlayer(player);
-        for (Player p : getAllPlayers()) {
-            p.hidePlayer(player);
-        }
         this.spectators.add(player);
         Arena.playersSpectating.put(player, this);
         player.setGameMode(GameMode.SPECTATOR);
@@ -879,6 +869,36 @@ public class Arena {
                 }
             }
         }.runTaskLater(ProBending.plugin, 3);
+    }
+
+    public void removeAllPlayers() {
+        for (PBTeamPlayer player : new ArrayList<>(getAllPBPlayers())) {
+            if (!player.getPlayer().isDead()) {
+                player.getPlayer().setGameMode(GameMode.SURVIVAL);
+                player.getPlayer().teleport(Arena.getSpawn());
+            }
+            ArenaListener.unFreezePlayer(player.getPlayer());
+            player.revertInventory();
+            player.transferData();
+            player.getBPlayer().unblockChi();
+            player.setInTieBreaker(false);
+            player.setInGame(false);
+            scoreboard.removePlayer(player.getPlayer());
+            Arena.playersPlaying.remove(player.getPlayer());
+        }
+        for (Player player : new ArrayList<>(getSpectators())) {
+            ConfigEvents.PlayerLeaveSpectate.run(this, player);
+            player.getPlayer().setGameMode(GameMode.SURVIVAL);
+            player.getPlayer().setAllowFlight(false);
+            player.getPlayer().teleport(Arena.getSpawn());
+            ArenaListener.unFreezePlayer(player);
+            if (BendingPlayer.getBendingPlayer(player) != null) BendingPlayer.getBendingPlayer(player).unblockChi();
+            player.getPlayer().setCollidable(true);
+            this.spectators.remove(player);
+            Arena.playersSpectating.remove(player);
+        }
+        updateScoreboard();
+        ConfigManager.getDataConfig().saveConfig();
     }
 
     // -- Claiming Stage --
@@ -1092,7 +1112,7 @@ public class Arena {
     }
 
     // Spectators
-    public ArrayList<Player> getSpectators() {
+    public HashSet<Player> getSpectators() {
         return spectators;
     }
 
@@ -1214,11 +1234,11 @@ public class Arena {
     // -- Arena --
 
     public Location getCenter() {
-        return ConfigMethods.getLocation("Arena.nr" + this.ID + ".center");
+        return ConfigMethods.getLocation(getPath() + ".center");
     }
 
     public void setCenter(Location location) {
-        ConfigMethods.saveLocation("Arena.nr" + this.ID + ".center", location);
+        ConfigMethods.saveLocation(getPath() + ".center", location);
     }
 
     public boolean isInGame() {
@@ -1236,4 +1256,6 @@ public class Arena {
     public String getID() {
         return this.ID;
     }
+
+    public String getPath() { return "Arena.nr" + this.ID; }
 }

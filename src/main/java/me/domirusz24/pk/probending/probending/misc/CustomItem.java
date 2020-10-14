@@ -10,15 +10,6 @@ public abstract class CustomItem {
 
     public static final ArrayList<CustomItem> customItems = new ArrayList<>();
 
-    public static CustomItem getCustomItem(String name) {
-        for (CustomItem e : customItems) {
-            if (e.getName().equalsIgnoreCase(name)) {
-                return e;
-            }
-        }
-        return null;
-    }
-
     public CustomItem() {
         customItems.add(this);
     }

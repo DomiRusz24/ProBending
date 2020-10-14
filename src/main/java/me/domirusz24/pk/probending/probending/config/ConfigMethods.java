@@ -1,8 +1,11 @@
 package me.domirusz24.pk.probending.probending.config;
 
+import me.domirusz24.pk.probending.probending.misc.customsigns.TeamStartSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 
 import static me.domirusz24.pk.probending.probending.ProBending.plugin;
 
@@ -38,6 +41,38 @@ public class ConfigMethods {
             return null;
         }
         return new Location(world, x + 0.5, y, z + 0.5, (float) yaw, (float) pitch);
+    }
+
+    public static void saveSign(TeamStartSign teamStartSign) {
+        if (!teamStartSign.isSet()) return;
+        String path = teamStartSign.getPath();
+        ConfigManager.getArenaLocationsConfig().reloadConfig();
+        Location location = teamStartSign.getSign().getLocation();
+        ConfigManager.getArenaLocationsConfig().getConfig().set(path + ".x", Math.floor(location.getX()));
+        ConfigManager.getArenaLocationsConfig().getConfig().set(path + ".y", Math.floor(location.getY()));
+        ConfigManager.getArenaLocationsConfig().getConfig().set(path + ".z",Math.floor(location.getZ()));
+        ConfigManager.getArenaLocationsConfig().getConfig().set(path + ".world", location.getWorld().getName());
+        ConfigManager.getArenaLocationsConfig().saveConfig();
+        ConfigManager.getArenaLocationsConfig().reloadConfig();
+    }
+
+    public static Sign getTeamSign(TeamStartSign teamStartSign) {
+        ConfigManager.getArenaTBStagesConfig().reloadConfig();
+        String path = teamStartSign.getPath();
+        double x = ConfigManager.getArenaTBStagesConfig().getConfig().getInt(path + ".x");
+        double y = ConfigManager.getArenaTBStagesConfig().getConfig().getInt(path + ".y");
+        double z = ConfigManager.getArenaTBStagesConfig().getConfig().getInt(path + ".z");
+        String worldName = ConfigManager.getArenaTBStagesConfig().getConfig().getString(path + ".world");
+        if (worldName == null) {
+            return null;
+        }
+        World world = Bukkit.getWorld(worldName);
+
+        Block block = new Location(world, x, y, z).getBlock();
+        if (block instanceof Sign) {
+            return (Sign) block;
+        }
+        return null;
     }
 
     public static void saveWESelection(String path, Location min, Location max) {

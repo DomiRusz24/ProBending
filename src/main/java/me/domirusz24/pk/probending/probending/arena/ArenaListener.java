@@ -5,9 +5,12 @@ import me.domirusz24.pk.probending.probending.arena.misc.ListHologram;
 import me.domirusz24.pk.probending.probending.arena.team.TempTeam;
 import me.domirusz24.pk.probending.probending.misc.CustomGUI;
 import me.domirusz24.pk.probending.probending.misc.CustomItem;
+import me.domirusz24.pk.probending.probending.misc.CustomSign;
 import me.domirusz24.pk.probending.probending.misc.customguis.SpectatorGUI;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -27,12 +30,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ArenaListener implements Listener {
-    private static final HashMap<String, Boolean> freezePlayers = new HashMap<>();
+    private static final HashSet<String> freezePlayers = new HashSet<>();
 
     public static void freezePlayer(Player player) {
-        freezePlayers.put(player.getUniqueId().toString(), true);
+        freezePlayers.add(player.getUniqueId().toString());
     }
 
     public static void unFreezePlayer(Player player) {
@@ -46,8 +50,21 @@ public class ArenaListener implements Listener {
     public static int HpRatio;
 
     @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        String[] split = event.getMessage().split(" ");
+        if (split[0].equalsIgnoreCase("/wyjdz") || split[0].equalsIgnoreCase("/leave")) return;
+        if (Arena.playersPlaying.contains(event.getPlayer())) {
+            event.getPlayer().sendMessage(ProBending.errorPrefix + "Jestes w grze! Nie mozesz uzyc tej komendy, prosze wyjdz za pomoca komendy /wyjdz");
+            event.setCancelled(true);
+        } else if (Arena.getPlayersSpectating().containsKey(event.getPlayer())) {
+            event.getPlayer().sendMessage(ProBending.errorPrefix + "Ogladasz gre! Nie mozesz uzyc tej komendy, prosze wyjdz za pomoca komendy /wyjdz");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (ArenaListener.freezePlayers.containsKey(event.getPlayer().getUniqueId().toString())) {
+        if (ArenaListener.freezePlayers.contains(event.getPlayer().getUniqueId().toString())) {
             event.setCancelled(true);
         }
     }
@@ -192,6 +209,21 @@ public class ArenaListener implements Listener {
             for (CustomItem e : CustomItem.customItems) {
                 if (main.getItemMeta().equals(e.getItem().getItemMeta())) {
                     e.onClick(event.getPlayer(), event.getAction());
+                    return;
+                }
+            }
+        }
+        if (event.getClickedBlock() != null) {
+            Block b = event.getClickedBlock();
+            if (b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST) {
+                Sign s = (Sign) b.getState();
+                for (CustomSign sign : CustomSign.CUSTOM_SIGNS) {
+                    if (sign.isSet()) {
+                        if (sign.getSign().equals(s)) {
+                            sign.onRightClick(event.getPlayer());
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -208,9 +240,12 @@ public class ArenaListener implements Listener {
     }
 
     @EventHandler
-    public void onAni(PlayerAnimationEvent event) {
-        if (Arena.getPlayersSpectating().get(event.getPlayer()) != null) {
-            new SpectatorGUI(event.getPlayer());
+    public void onInvDrag(InventoryDragEvent event) {
+        if (event.getWhoClicked().getType().equals(EntityType.PLAYER)) {
+            CustomGUI g = CustomGUI.PLAYER_ACTIVE_GUI.get((Player) event.getWhoClicked());
+            if (g != null) {
+                g.drag(event);
+            }
         }
     }
 
@@ -225,12 +260,9 @@ public class ArenaListener implements Listener {
     }
 
     @EventHandler
-    public void onInvDrag(InventoryDragEvent event) {
-        if (event.getWhoClicked().getType().equals(EntityType.PLAYER)) {
-            CustomGUI g = CustomGUI.PLAYER_ACTIVE_GUI.get((Player) event.getWhoClicked());
-            if (g != null) {
-                g.drag(event);
-            }
+    public void onAni(PlayerAnimationEvent event) {
+        if (Arena.getPlayersSpectating().get(event.getPlayer()) != null) {
+            new SpectatorGUI(event.getPlayer());
         }
     }
 

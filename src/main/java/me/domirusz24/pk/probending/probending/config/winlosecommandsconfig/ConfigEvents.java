@@ -83,6 +83,15 @@ public enum ConfigEvents {
         }
     }
 
+    public void runPlayerOnly(Arena arena, Player player) {
+        List<String> commands = getCommands(arena);
+        for (String com : commands) {
+            if (!com.contains("%PLAYER%")) continue;
+            String command = com.replace("%PLAYER%", player.getName());
+            Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+        }
+    }
+
     public String getPath(Arena arena) {
         return "Arena" + arena.getID() + "." + path;
     }
